@@ -36,3 +36,11 @@
 | !HOTFIX   | 급하게 치명적인 버그를 고쳐야 하는 경우                                             |
 | Test      | 테스트 코드 작성 및 테스트 코드 리팩토링                                            |
 | Chore     | (코드의 수정 없이) 그 외 기타 수정                                                  |
+
+`Naming Convention`
+
+- 폴더명 : CamelCase
+  - app 폴더 내부 라우터 디렉토리명은 kebab-case로 작성합니다.
+- 컴포넌트명 : PascalCase
+- 그외 유틸 함수, 타입 정의 파일 등 : CamelCase
+- asset 내 이미지, 아이콘 등 : kebab-case
