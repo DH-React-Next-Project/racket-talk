@@ -5,3 +5,10 @@ html {
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
+body {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  background-color: white;
+}
