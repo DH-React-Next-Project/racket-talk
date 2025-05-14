@@ -4,7 +4,10 @@ export default function Home() {
   return (
     <div className="flex flex-col p-5 min-h-screen justify-center items-center">
       <div className="flex flex-col justify-center items-center">
+        {/* 로고 이미지 */}
         <Image src={logo} alt="logo" width={154} height={196} />
+
+        {/* 서비스 소개말 */}
         <div>
           <p className="text-lg text-center">
             내 주변 <span className="text-main font-semibold">테니스장</span>을
@@ -20,6 +23,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 로그인, 회원가입 버튼 */}
       <div className="flex flex-col max-w-[600px] fixed bottom-4 inset-x-10 mx-auto text-white gap-3">
         <button className="bg-main w-full rounded-md h-10">Login</button>
         <button className="bg-main w-full rounded-md h-10">Join</button>
