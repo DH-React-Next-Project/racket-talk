@@ -13,6 +13,3 @@ model user {
   password String @db.VarChar(30)
   nickname String @db.VarChar(30)
 }
-
-
-
