@@ -1,5 +1,6 @@
 import logoBall from "@/assets/chat/logo-ball.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 const ChatRoom = (props: CourtChats[]) => {
     return (
@@ -8,7 +9,7 @@ const ChatRoom = (props: CourtChats[]) => {
                 <div key={court.courtName} className="pb-4 px-4">
                     <div className="font-bold text-charcoal pb-2">{court.courtName}</div>
                     {court.rooms.map((room) => (
-                        <div key={room.id} className="p-2 flex">
+                        <Link href={`/chat/${room.id}`} key={room.id} className="p-2 flex">
                             <Image
                                 src={logoBall}
                                 alt="logo"
@@ -20,7 +21,7 @@ const ChatRoom = (props: CourtChats[]) => {
                                     className="text-sm text-gray-500">{room.lastMessage.message}
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             ))}</div>

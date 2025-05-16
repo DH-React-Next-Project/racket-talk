@@ -5,22 +5,22 @@ import Messages from "@/_components/chat/Messages";
 import sentMessage from "@/assets/chat/sent-message.svg";
 import Image from "next/image";
 
-export default function ChatPage() {
+interface Props {
+    params: { roomId?: string };
+}
+
+export default function ChatPage({params}: Props) {
+    const roomId = JSON.stringify(params.roomId);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
     const [recipientId, setRecipientId] = useState("");
     const socketRef = useRef<WebSocket | null>(null);
     const scrollRef = useRef<HTMLDivElement | null>(null);
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
-        }
-    }, [messages]);
 
     useEffect(() => {
         const connectWebSocket = async () => {
-            await fetch("/api/ws");
+            await fetch("/api/ws/" + roomId);
             //TODO url 수정 필요
             const ws = new WebSocket("ws://172.16.20.105:3001");
 
@@ -33,7 +33,6 @@ export default function ChatPage() {
                 if (data.type === "id") {
                     setUserId(data.id);
                 } else if (
-                    data.type === "private" ||
                     data.type === "broadcast"
                 ) {
                     setMessages((prevMessages) => [
@@ -53,15 +52,21 @@ export default function ChatPage() {
 
             socketRef.current = ws;
         };
-
-        connectWebSocket();
-
+        if (socketRef.current) {
+            connectWebSocket();
+        }
         return () => {
             if (socketRef.current) {
                 socketRef.current.close();
             }
         };
-    }, []);
+    }, [roomId]);
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current?.scrollHeight;
+        }
+    }, [messages]);
 
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
