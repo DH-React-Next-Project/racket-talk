@@ -27,6 +27,21 @@ const JoinPage = () => {
       return;
     }
 
+    if (form.nickname.length < 2) {
+      alert("닉네임은 두 글자 이상으로 작성해 주세요.");
+      return;
+    }
+
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).{10,}$/;
+
+    if (!passwordRegex.test(form.password)) {
+      alert(
+        "비밀번호는 10자 이상이며, 영문/숫자/특수기호를 모두 포함해야 합니다."
+      );
+      return;
+    }
+
     try {
       const res = await fetch("/api/user/join", {
         method: "POST",
@@ -102,7 +117,7 @@ const JoinPage = () => {
         />
         <button
           onClick={onSubmit}
-          className="bg-main rounded-md p-3 text-white"
+          className="bg-main bg-opacity-25 rounded-md p-3 text-white"
         >
           Join
         </button>
