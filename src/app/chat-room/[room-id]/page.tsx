@@ -4,13 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import Messages from "@/_components/chat/Messages";
 import sentMessage from "@/assets/chat/sent-message.svg";
 import Image from "next/image";
+import {useParams} from "next/navigation";
 
-interface Props {
-    params: { roomId?: string };
-}
 
-export default function ChatPage({params}: Props) {
-    const roomId = JSON.stringify(params.roomId);
+
+export default function ChatPage() {
+    const params = useParams();
+    const roomId = params["room-id"];
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
@@ -19,10 +19,13 @@ export default function ChatPage({params}: Props) {
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
+        if (!roomId) return;
+        if (socketRef.current) return;
+
         const connectWebSocket = async () => {
-            await fetch("/api/ws/" + roomId);
+            await fetch("/api/ws");
             //TODO url 수정 필요
-            const ws = new WebSocket("ws://172.16.20.105:3001");
+            const ws = new WebSocket(`ws://172.16.20.105:3001`);
 
             ws.onopen = () => {
                 console.log("WebSocket connection established");
@@ -52,9 +55,9 @@ export default function ChatPage({params}: Props) {
 
             socketRef.current = ws;
         };
-        if (socketRef.current) {
-            connectWebSocket();
-        }
+
+        connectWebSocket();
+
         return () => {
             if (socketRef.current) {
                 socketRef.current.close();

@@ -9,7 +9,7 @@ const ChatRoom = (props: CourtChats[]) => {
                 <div key={court.courtName} className="pb-4 px-4">
                     <div className="font-bold text-charcoal pb-2">{court.courtName}</div>
                     {court.rooms.map((room) => (
-                        <Link href={`/chat/${room.id}`} key={room.id} className="p-2 flex">
+                        <Link href={`/chat-room/${room.id}`} key={room.id} className="p-2 flex">
                             <Image
                                 src={logoBall}
                                 alt="logo"
