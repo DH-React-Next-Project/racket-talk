@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/prismaClient";
+import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,10 +26,19 @@ export async function POST(req: NextRequest) {
     }
 
     // 로그인 성공
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "Login Successful!", user },
       { status: 200 }
     );
+    response.cookies.set("session", email, {
+      httpOnly: true,
+      secure: false,
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24,
+    });
+
+    return response;
   } catch (error) {
     console.error("Login Error", error);
     return NextResponse.json(
