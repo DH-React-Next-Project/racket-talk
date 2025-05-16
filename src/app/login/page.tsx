@@ -4,13 +4,13 @@ import Image from "next/image";
 import logo from "@/assets/join/logo-without-text.svg";
 import { useState } from "react";
 
-type FormState = {
+type LoginState = {
   email: string;
   password: string;
 };
 
 const LoginPage = () => {
-  const [form, setForm] = useState<FormState>({
+  const [form, setForm] = useState<LoginState>({
     email: "",
     password: "",
   });
