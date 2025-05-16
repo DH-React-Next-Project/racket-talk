@@ -102,7 +102,7 @@ const JoinPage = () => {
         />
         <button
           onClick={onSubmit}
-          className="bg-main rounded-md p-3 text-white"
+          className="bg-main bg-opacity-25 rounded-md p-3 text-white"
         >
           Join
         </button>
