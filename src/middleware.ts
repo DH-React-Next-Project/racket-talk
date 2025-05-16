@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const session = req.cookies.get("session")?.value;
+  const session = req.cookies.get("user_id")?.value;
 
   const protectedPaths = ["/chat", "/my"];
   const isProtected = protectedPaths.some((path) =>

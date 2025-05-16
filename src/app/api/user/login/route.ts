@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       { message: "Login Successful!", user },
       { status: 200 }
     );
-    response.cookies.set("session", email, {
+    response.cookies.set("user_id", user.user_id, {
       httpOnly: true,
       secure: false,
       path: "/",
