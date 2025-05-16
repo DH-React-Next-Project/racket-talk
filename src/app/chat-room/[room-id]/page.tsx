@@ -95,11 +95,6 @@ export default function ChatPage() {
         <div className="flex flex-col h-screen">
             <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
                 <h1 className="text-xl font-bold">헤더 자리</h1>
-                {userId && (
-                    <div className="bg-blue-600 px-3 py-1 rounded">
-                        Your ID: <span className="font-bold">{userId}</span>
-                    </div>
-                )}
             </div>
             <div className="flex mx-4 mt-2 items-end">
                 <div className="px-4 py-2 bg-main text-white rounded-md">

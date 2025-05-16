@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import { WebSocketServer, WebSocket } from "ws";
+import {prisma} from "@/utils/prismaClient";
+import { IncomingMessage } from "http";
 
 interface Client {
     id: string;
@@ -9,18 +11,29 @@ interface Client {
 let wss: WebSocketServer | null = null;
 let clients: Client[] = [];
 
-export async function GET() {
+export async function GET(nextRequest: NextRequest) {
     if (!wss) {
         console.log("WebSocket server is initializing");
 
         wss = new WebSocketServer({ port: 3001 });
 
-        wss.on("connection", (ws) => {
-            // TODO: 클라이언트 아이디 관리리
-            const clientId = Math.random().toString(36).substring(7);
-            clients.push({ id: clientId, ws });
+        wss.on("connection", async (ws: WebSocket, req: IncomingMessage) => {
+            const url = new URL(req.url!, `http://${req.headers.host}`);
+            console.log(url)
+            const clientId = nextRequest.cookies.get("user_id")?.value;
+            if (!clientId) {
+                ws.close();
+                return;
+            }
+            const user = await prisma.user.findUnique({ where: { user_id: +clientId }},);
+            const nickname = user?.nickname;
+            if (!nickname) {
+                ws.close();
+                return;
+            }
+            clients.push({ id: nickname, ws });
 
-            ws.send(JSON.stringify({ type: "id", id: clientId }));
+            ws.send(JSON.stringify({ type: "id", id: nickname }));
 
             ws.on("message", (message: string) => {
                 const data = JSON.parse(message);
