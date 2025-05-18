@@ -12,7 +12,16 @@ model user {
   email    String @unique @db.VarChar(30)
   password String @db.VarChar(30)
   nickname String @db.VarChar(30)
+  favorites favorite[]  // 즐겨찾기한 테니스장
 }
 
+model favorite {
+  favorite_id           Int      @id @default(autoincrement())
+  user         user     @relation(fields: [userId], references: [user_id])
+  userId       Int
+  //court        court    @relation(fields: [courtId], references: [court_id])
+  //courtId      Int
+  created_at   DateTime @default(now())
 
-
+  //@@unique([userId, courtId]) // 하나의 유저가 같은 테니스장을 여러 번 찜 못하게
+}
