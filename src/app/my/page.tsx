@@ -100,7 +100,7 @@ const MyPage = () => {
         Racket Talk
       </div>
 
-      <div className="bg-[#F6F6F6] w-[336px] h-[136px] rounded-[10px] mx-auto flex flex-col justify-between px-4 py-2">
+      <div className="bg-[#F6F6F6] w-[336px] h-[136px] rounded-[10px] mx-auto mt-10 flex flex-col justify-between px-4 py-2">
         <div className="flex mt-2">
           <div className="flex items-center justify-center mr-4">
             <Image src={profile} alt="profile" width={50} height={50} />
@@ -127,7 +127,7 @@ const MyPage = () => {
         </div>
       </div>
 
-      <div className="flex items-baseline px-4 mt-6 mb-2">
+      <div className="flex items-baseline px-4 mt-10 mb-2">
         <span className="text-lg font-semibold mr-2">즐겨찾기한 테니스장</span>
         <span className="text-sm text-gray-500">총 {favorites.length}개</span>
       </div>
