@@ -14,7 +14,6 @@ export default function ChatPage() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
-    const [recipientId, setRecipientId] = useState("");
     const socketRef = useRef<WebSocket | null>(null);
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -25,7 +24,7 @@ export default function ChatPage() {
         const connectWebSocket = async () => {
             await fetch("/api/ws");
             //TODO url 수정 필요
-            const ws = new WebSocket(`ws://172.16.20.105:3001`);
+            const ws = new WebSocket(`ws://172.16.20.105:3001?roomId=${roomId}`);
 
             ws.onopen = () => {
                 console.log("WebSocket connection established");
@@ -35,9 +34,7 @@ export default function ChatPage() {
                 const data = JSON.parse(event.data);
                 if (data.type === "id") {
                     setUserId(data.id);
-                } else if (
-                    data.type === "broadcast"
-                ) {
+                } else {
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         {
@@ -74,19 +71,8 @@ export default function ChatPage() {
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message && socketRef.current && userId) {
-            const messageData = recipientId
-                ? { type: "private", from: userId, to: recipientId, message }
-                : { type: "broadcast", from: userId, message };
-
+            const messageData = {type: "broadcast", from: userId, message} ;
             socketRef.current.send(JSON.stringify(messageData));
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                    message: message,
-                    username: userId,
-                    time: new Date(),
-                },
-            ]);
             setMessage("");
         }
     };
