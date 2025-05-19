@@ -30,16 +30,10 @@ const LoginPage = () => {
         }),
       });
 
-      let data;
-
-      try {
-        data = await res.json();
-      } catch {
-        data = { message: "서버 응답이 올바르지 않습니다." };
-      }
-
       if (!res.ok) {
-        alert(`로그인 실패: ${data.message}`);
+        alert(
+          `로그인에 실패하였습니다. 이메일 및 패스워드를 다시 한번 확인해 주세요.`
+        );
       } else {
         alert("로그인 성공!");
         router.push("/map");
