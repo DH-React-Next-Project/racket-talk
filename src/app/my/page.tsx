@@ -7,7 +7,8 @@ import starOutline from "@/assets/my/star-outline.svg";
 import MyPageButton from "@/_components/my/MyPageButton";
 import courtImage from "@/assets/my/sample.svg";
 
-import LogoutModal from "@/_components/my/logoutModal";
+import LogoutModal from "@/_components/my/LogoutModal";
+import WithdrawModal from "@/_components/my/WithdrawModal";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -114,7 +115,16 @@ const MyPage = () => {
             />
           )}
 
-          <MyPageButton text="회원탈퇴" />
+          <MyPageButton text="회원탈퇴" onClick={() => setShowModal(true)} />
+          {showModal && (
+            <WithdrawModal
+              onConfirm={() => {
+                setShowModal(false);
+                router.push("/");
+              }}
+              onCancel={() => setShowModal(false)}
+            />
+          )}
         </div>
       </div>
 
