@@ -48,7 +48,7 @@ export default function MapPage() {
 
       const options = {
         center: new window.kakao.maps.LatLng(37.544318, 127.056145),
-        level: 4,
+        level: 7,
       };
 
       const map = new window.kakao.maps.Map(container, options);
