@@ -4,13 +4,16 @@ import { useState, useEffect, useRef } from "react";
 import Messages from "@/_components/chat/Messages";
 import sentMessage from "@/assets/chat/sent-message.svg";
 import Image from "next/image";
-import {useParams} from "next/navigation";
+import {useParams, useSearchParams} from "next/navigation";
 
 
 
 export default function ChatPage() {
     const params = useParams();
     const roomId = params["room-id"];
+    const searchParams = useSearchParams();
+    const courtName = searchParams.get("courtName");
+    const roomName = searchParams.get("roomName");
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
@@ -84,10 +87,10 @@ export default function ChatPage() {
             </div>
             <div className="flex mx-4 mt-2 items-end">
                 <div className="px-4 py-2 bg-main text-white rounded-md">
-                    테니스장 이름, 코트 번호 자리
+                    {courtName}
                 </div>
                 <div className="underline mx-4 decoration-lightGray">
-                    예약 시간 자리
+                    {roomName}
                 </div>
             </div>
             <Messages messages={messages} username={userId ? userId : ""} />
