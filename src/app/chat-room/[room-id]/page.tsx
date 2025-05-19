@@ -78,7 +78,7 @@ export default function ChatPage() {
     };
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-screen pb-24">
             <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
                 <h1 className="text-xl font-bold">헤더 자리</h1>
             </div>
@@ -109,9 +109,6 @@ export default function ChatPage() {
                     </button>
                 </div>
             </form>
-            <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
-                <h1 className="text-xl font-bold">풋터 자리</h1>
-            </div>
         </div>
     );
 }
