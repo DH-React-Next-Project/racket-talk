@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import profile from "@/assets/my/solar_tennis-bold.svg";
-import starFilled from "@/assets/my/Property 1=mdi_star.svg";
-import starOutline from "@/assets/my/Property 1=mdi_star-outline.svg";
+import profile from "@/assets/my/tennis-bold.svg";
+import starFilled from "@/assets/my/star-filled.svg";
+import starOutline from "@/assets/my/star-outline.svg";
 import MyPageButton from "@/_components/my/MyPageButton";
 import courtImage from "@/assets/my/sample.svg";
 
 import LogoutModal from "@/_components/my/logoutModal";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 {/* 더미 데이터 */ }
 const mockFavorites = [
@@ -73,19 +74,6 @@ const mockFavorites = [
 const MyPage = () => {
   const [favorites, setFavorites] = useState(mockFavorites);
   const [showModal, setShowModal] = useState(false);
-  const handleLogoutClick = () => {
-    setShowModal(true);
-  };
-
-  const confirmLogout = () => {
-    console.log("로그아웃 진행");
-    setShowModal(false);
-  };
-
-  const cancelLogout = () => {
-    setShowModal(false);
-  };
-
   const toggleFavorite = (id: number) => {
     setFavorites((prev) =>
       prev.map((court) =>
@@ -93,6 +81,8 @@ const MyPage = () => {
       )
     );
   };
+
+  const router = useRouter();
 
   return (
     <>
@@ -118,11 +108,12 @@ const MyPage = () => {
             <LogoutModal
               onConfirm={() => {
                 setShowModal(false);
-                console.log("로그아웃");
+                router.push("/");
               }}
               onCancel={() => setShowModal(false)}
             />
           )}
+
           <MyPageButton text="회원탈퇴" />
         </div>
       </div>

@@ -1,4 +1,8 @@
-const LogoutModal = ({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) => {
+"use client";
+
+export default function LogoutModal({ onConfirm, onCancel, }: {
+  onConfirm: () => void; onCancel: () => void;
+}) {
   return (
     <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-white rounded-lg p-6 w-[300px] text-center shadow-lg border z-10">
       <p className="text-lg font-semibold mb-6">정말 로그아웃 하시겠습니까?</p>
@@ -18,6 +22,4 @@ const LogoutModal = ({ onConfirm, onCancel }: { onConfirm: () => void; onCancel:
       </div>
     </div>
   );
-};
-
-export default LogoutModal;
+}
