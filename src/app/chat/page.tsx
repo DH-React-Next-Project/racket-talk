@@ -1,8 +1,14 @@
+import ChatList from "./components/ChatItem";
+import Header from "./components/Header";
+
 const ChatPage = () => {
   return (
-    <>
-      <h1>채팅 페이지입니당</h1>
-    </>
+    <div>
+      <Header />
+      <div className="w-full p-5">
+        <ChatList />
+      </div>
+    </div>
   );
 };
 
