@@ -4,9 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Messages from "@/_components/chat/Messages";
 import sentMessage from "@/assets/chat/sent-message.svg";
 import Image from "next/image";
-import {useParams, useSearchParams} from "next/navigation";
-
-
+import { useParams, useSearchParams } from "next/navigation";
 
 export default function ChatPage() {
     const params = useParams();
@@ -27,7 +25,9 @@ export default function ChatPage() {
         const connectWebSocket = async () => {
             await fetch("/api/ws");
             //TODO url 수정 필요
-            const ws = new WebSocket(`ws://172.16.20.105:3001?roomId=${roomId}`);
+            const ws = new WebSocket(
+                `ws://172.16.20.105:3001?roomId=${roomId}`
+            );
 
             ws.onopen = () => {
                 console.log("WebSocket connection established");
@@ -74,7 +74,7 @@ export default function ChatPage() {
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message && socketRef.current && userId) {
-            const messageData = {type: "broadcast", from: userId, message} ;
+            const messageData = { room_id: roomId, from: userId, message };
             socketRef.current.send(JSON.stringify(messageData));
             setMessage("");
         }
