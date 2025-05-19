@@ -14,5 +14,14 @@ model user {
   nickname String @db.VarChar(30)
 }
 
+model courts {
+  court_id    Int     @id @default(autoincrement())
+  court_name  String  @db.VarChar(50)
+  address     String? @db.VarChar(100)
+  telno       String? @db.VarChar(50)
+  court_image String? @db.VarChar(500)
+  lng         Decimal @db.Decimal(12, 8)
+  lat         Decimal @db.Decimal(12, 8)
 
-
+  @@index([court_id], map: "ix_courts_court_id")
+}

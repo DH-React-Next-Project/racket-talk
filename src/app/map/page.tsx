@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import Script from "next/script";
@@ -13,6 +11,23 @@ declare global {
 
 export default function MapPage() {
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [courts, setCourts] = useState([]);
+
+
+  //테니스장정보 가져오기
+  useEffect(() => {
+    const fetchCourts = async () => {
+      try {
+        const res = await fetch("/api/courts");
+        const data = await res.json();
+        setCourts(data);
+      } catch (error) {
+        console.error("❌ Failed to fetch courts:", error);
+      }
+    };
+
+    fetchCourts();
+  }, []);
 
   useEffect(() => {
     if (!mapLoaded) return;
@@ -42,57 +57,10 @@ export default function MapPage() {
       const overlays: any[] = [];
 
 
-      //임시데이터
-      const courts = [
-        {
-          id: "1",
-          name: "성수 테니스장",
-          lat: 37.544318,
-          lng: 127.056145,
-        },
-        {
-          id: "2",
-          name: "서울숲 테니스코트",
-          lat: 37.544964,
-          lng: 127.037084,
-        },
-        {
-          id: "3",
-          name: "건대 테니스장",
-          lat: 37.540725,
-          lng: 127.070251,
-        },
-        {
-          id: "4",
-          name: "압구정 테니스장",
-          lat: 37.527023,
-          lng: 127.028601,
-        },
-        {
-          id: "5",
-          name: "한양대 테니스코트",
-          lat: 37.555872,
-          lng: 127.043125,
-        },
-        {
-          id: "6",
-          name: "뚝섬유원지 테니스장",
-          lat: 37.531583,
-          lng: 127.065388,
-        },
-        {
-          id: "7",
-          name: "청담 테니스코트",
-          lat: 37.525094,
-          lng: 127.051186,
-        },
-        {
-          id: "8",
-          name: "중랑천 테니스장",
-          lat: 37.586732,
-          lng: 127.062793,
-        },
-      ];
+      if (!Array.isArray(courts)) {
+        console.error("❌ courts is not an array:", courts);
+        return;
+      }
 
       courts.forEach((court) => {
         const position = new window.kakao.maps.LatLng(court.lat, court.lng);
@@ -100,6 +68,7 @@ export default function MapPage() {
         const marker = new window.kakao.maps.Marker({
           map,
           position,
+          //카카오맵 마커이미지는 public/ 만 접근가능하여 public/img 사용함
           image: new window.kakao.maps.MarkerImage(
             "/img/map-marker.png",
             new window.kakao.maps.Size(25, 36),
@@ -109,7 +78,7 @@ export default function MapPage() {
 
         const content = `
           <div style="padding:8px 16px; background:white; border-radius:6px; border:1px solid #888;">
-            <strong>${court.name}</strong>
+            <strong>${court.court_name}</strong>
           </div>
         `;
 
@@ -132,7 +101,7 @@ export default function MapPage() {
         overlays.forEach((o) => o.setMap(null));
       });
     });
-  }, [mapLoaded]);
+  }, [mapLoaded, courts]);
 
   return (
     <>
