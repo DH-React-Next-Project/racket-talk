@@ -3,6 +3,7 @@
 import Image from "next/image";
 import logo from "@/assets/join/logo-without-text.svg";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type FormState = {
   email: string;
@@ -12,6 +13,7 @@ type FormState = {
 };
 
 const JoinPage = () => {
+  const router = useRouter();
   const [form, setForm] = useState<FormState>({
     email: "",
     password: "",
@@ -63,7 +65,8 @@ const JoinPage = () => {
       if (!res.ok) {
         alert(`회원가입 실패: ${data.message}`);
       } else {
-        alert("회원가입 성공!");
+        alert("회원가입 성공! 로그인 화면으로 이동합니다.");
+        router.push("/login");
       }
     } catch (error) {
       console.error("회원가입 요청 실패:", error);

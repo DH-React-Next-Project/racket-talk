@@ -3,6 +3,7 @@
 import Image from "next/image";
 import logo from "@/assets/join/logo-without-text.svg";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type LoginState = {
   email: string;
@@ -10,6 +11,7 @@ type LoginState = {
 };
 
 const LoginPage = () => {
+  const router = useRouter();
   const [form, setForm] = useState<LoginState>({
     email: "",
     password: "",
@@ -40,6 +42,7 @@ const LoginPage = () => {
         alert(`로그인 실패: ${data.message}`);
       } else {
         alert("로그인 성공!");
+        router.push("/map");
       }
     } catch (error) {
       console.error("회원가입 요청 실패:", error);
