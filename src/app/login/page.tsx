@@ -17,8 +17,6 @@ const LoginPage = () => {
     password: "",
   });
 
-  console.log(form);
-
   const onSubmit = async () => {
     try {
       const res = await fetch("/api/user/login", {
