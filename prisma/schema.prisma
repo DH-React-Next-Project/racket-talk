@@ -17,8 +17,8 @@ model user {
 
 model courts {
   court_id    Int     @id @default(autoincrement())
-  court_name  String  @db.VarChar(50)
-  address     String? @db.VarChar(100)
+  court_name  String  @db.VarChar(200)
+  address     String? @db.VarChar(200)
   telno       String? @db.VarChar(50)
   court_image String? @db.VarChar(500)
   lng         Decimal @db.Decimal(12, 8)
