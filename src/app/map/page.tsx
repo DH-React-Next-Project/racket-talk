@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export default function MapPage() {
+const MapPage=()=> {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [courts, setCourts] = useState([]);
 
@@ -120,3 +120,5 @@ export default function MapPage() {
     </>
   );
 }
+
+export default MapPage;
