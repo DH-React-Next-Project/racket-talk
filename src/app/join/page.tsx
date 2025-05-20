@@ -21,8 +21,6 @@ const JoinPage = () => {
     passwordConfirm: "",
   });
 
-  console.log(form);
-
   const onSubmit = async () => {
     if (form.password !== form.passwordConfirm) {
       alert("비밀번호가 일치하지 않습니다.");
