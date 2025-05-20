@@ -25,9 +25,9 @@ const ChatRoom = (props: CourtChats[]) => {
                             <Image
                                 src={logoBall}
                                 alt="logo"
-                                className="w-11 h-11"
+                                className="w-13 h-13"
                             />
-                            <div className="mx-4 px-2 border-b border-lightGray2 w-full">
+                            <div className="mx-4 px-2 pb-2 border-b border-lightGray2 w-full">
                                 <div className="text-lg font-bold">
                                     {room.roomName}
                                 </div>
