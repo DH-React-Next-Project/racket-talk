@@ -1,9 +1,5 @@
 const ChatPage = () => {
-  return (
-    <>
-      <h1>채팅 페이지입니당</h1>
-    </>
-  );
+  return <></>;
 };
 
 export default ChatPage;

@@ -8,20 +8,28 @@ datasource db {
 }
 
 model user {
-  user_id  Int    @id @default(autoincrement())
-  email    String @unique @db.VarChar(30)
-  password String @db.VarChar(30)
-  nickname String @db.VarChar(30)
-  favorites favorite[]  // 즐겨찾기한 테니스장
+  user_id  Int        @id @default(autoincrement())
+  email    String     @unique @db.VarChar(30)
+  password String     @db.VarChar(30)
+  nickname String     @db.VarChar(30)
+  favorite favorite[]
+}
+
+model courts {
+  court_id    Int     @id @default(autoincrement())
+  court_name  String  @db.VarChar(50)
+  address     String? @db.VarChar(100)
+  telno       String? @db.VarChar(50)
+  court_image String? @db.VarChar(500)
+  lng         Decimal @db.Decimal(12, 8)
+  lat         Decimal @db.Decimal(12, 8)
+
+  @@index([court_id], map: "ix_courts_court_id")
 }
 
 model favorite {
-  favorite_id           Int      @id @default(autoincrement())
-  user         user     @relation(fields: [userId], references: [user_id])
-  userId       Int
-  //court        court    @relation(fields: [courtId], references: [court_id])
-  //courtId      Int
-  created_at   DateTime @default(now())
-
-  //@@unique([userId, courtId]) // 하나의 유저가 같은 테니스장을 여러 번 찜 못하게
+  favorite_id Int      @id @default(autoincrement())
+  userId      Int
+  created_at  DateTime @default(now())
+  user        user     @relation(fields: [userId], references: [user_id])
 }
