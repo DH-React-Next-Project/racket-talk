@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "@/assets/home/logo.svg";
+import logo from "@/assets/root/logo.svg";
 import LandingBtn from "@/_components/home/LandingBtn";
 
 export default function Home() {
