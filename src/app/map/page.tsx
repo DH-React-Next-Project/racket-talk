@@ -11,22 +11,22 @@ declare global {
 
 const MapPage=()=> {
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [courts, setCourts] = useState([]);
+  const [court, setCourt] = useState([]);
 
 
   //테니스장정보 가져오기
   useEffect(() => {
-    const fetchCourts = async () => {
+    const fetchCourt = async () => {
       try {
-        const res = await fetch("/api/courts");
+        const res = await fetch("/api/court");
         const data = await res.json();
-        setCourts(data);
+        setCourt(data);
       } catch (error) {
-        console.error("❌ Failed to fetch courts:", error);
+        console.error("❌ Failed to fetch court:", error);
       }
     };
 
-    fetchCourts();
+    fetchCourt();
   }, []);
 
   useEffect(() => {
@@ -57,12 +57,12 @@ const MapPage=()=> {
       const overlays: any[] = [];
 
 
-      if (!Array.isArray(courts)) {
-        console.error("❌ courts is not an array:", courts);
+      if (!Array.isArray(court)) {
+        console.error("❌ court is not an array:", court);
         return;
       }
 
-      courts.forEach((court) => {
+      court.forEach((court) => {
         const position = new window.kakao.maps.LatLng(court.lat, court.lng);
 
         const marker = new window.kakao.maps.Marker({
@@ -70,9 +70,9 @@ const MapPage=()=> {
           position,
           //카카오맵 마커이미지는 public/ 만 접근가능하여 public/img 사용함
           image: new window.kakao.maps.MarkerImage(
-            "/img/map-marker.png",
-            new window.kakao.maps.Size(25, 36),
-            { offset: new window.kakao.maps.Point(20, 36) }
+              "/img/map-marker.png",
+              new window.kakao.maps.Size(25, 36),
+              { offset: new window.kakao.maps.Point(20, 36) }
           ),
         });
 
@@ -101,23 +101,23 @@ const MapPage=()=> {
         overlays.forEach((o) => o.setMap(null));
       });
     });
-  }, [mapLoaded, courts]);
+  }, [mapLoaded, court]);
 
   return (
-    <>
-      <Script
-        strategy="afterInteractive"
-        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`}
-        onLoad={() => {
-          console.log("✅ Kakao SDK script loaded");
-          setMapLoaded(true);
-        }}
-        onError={() => {
-          console.error("❌ Failed to load Kakao Maps script");
-        }}
-      />
-      <div id="map" style={{ width: "100%", height: "100vh" }}></div>
-    </>
+      <>
+        <Script
+            strategy="afterInteractive"
+            src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`}
+            onLoad={() => {
+              console.log("✅ Kakao SDK script loaded");
+              setMapLoaded(true);
+            }}
+            onError={() => {
+              console.error("❌ Failed to load Kakao Maps script");
+            }}
+        />
+        <div id="map" style={{ width: "100%", height: "100vh" }}></div>
+      </>
   );
 }
 

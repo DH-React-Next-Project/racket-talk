@@ -108,6 +108,9 @@ function Empty() {
         </main>
     );
 }
+
+
+
 function Header({ court }: { court: Court }) {
     return (
         <div className="flex items-center gap-2">

@@ -3,7 +3,7 @@ import { prisma } from "@/utils/prismaClient";
 
 export async function GET() {
     try {
-        const courts = await prisma.courts.findMany({
+        const courts = await prisma.court.findMany({
             select: {
                 court_id: true,
                 court_name: true,
