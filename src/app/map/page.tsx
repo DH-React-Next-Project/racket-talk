@@ -11,7 +11,7 @@ declare global {
 
 const MapPage=()=> {
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [courts, setCourts] = useState([]);
+  const [courtList, setCourtList] = useState([]);
 
 
   //테니스장정보 가져오기
@@ -20,7 +20,7 @@ const MapPage=()=> {
       try {
         const res = await fetch("/api/courts");
         const data = await res.json();
-        setCourts(data);
+        setCourtList(data);
       } catch (error) {
         console.error("❌ Failed to fetch courts:", error);
       }
@@ -57,12 +57,12 @@ const MapPage=()=> {
       const overlays: any[] = [];
 
 
-      if (!Array.isArray(courts)) {
-        console.error("❌ courts is not an array:", courts);
+      if (!Array.isArray(courtList)) {
+        console.error("❌ courts is not an array:", courtList);
         return;
       }
 
-      courts.forEach((court) => {
+      courtList.forEach((court) => {
         const position = new window.kakao.maps.LatLng(court.lat, court.lng);
 
         const marker = new window.kakao.maps.Marker({
@@ -101,7 +101,7 @@ const MapPage=()=> {
         overlays.forEach((o) => o.setMap(null));
       });
     });
-  }, [mapLoaded, courts]);
+  }, [mapLoaded, courtList]);
 
   return (
     <>

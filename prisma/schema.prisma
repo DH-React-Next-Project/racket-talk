@@ -15,7 +15,7 @@ model user {
   favorite favorite[]
 }
 
-model courts {
+model court {
   court_id    Int     @id @default(autoincrement())
   court_name  String  @db.VarChar(50)
   address     String? @db.VarChar(100)
