@@ -5,6 +5,7 @@ import Messages from "@/_components/chat/Messages";
 import sentMessage from "@/assets/chat/sent-message.svg";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
+import Header from "@/_components/layouts/Header";
 
 export default function ChatPage() {
     const params = useParams();
@@ -80,12 +81,22 @@ export default function ChatPage() {
         }
     };
 
+    const onBackButtonClick = () => {
+        window.history.back();
+    }
+
+    const onOutButtonClick = () => {
+        //TODO 방 나가기 로직 구현 필요
+        console.log("방 나가기");
+    }
+
     return (
         <div className="flex flex-col h-screen pb-24">
-            <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
-                <h1 className="text-xl font-bold">헤더 자리</h1>
-            </div>
-            <div className="flex mx-4 mt-2 items-end">
+            <Header onBackButtonClick={onBackButtonClick} onOutButtonClick={onOutButtonClick} showButton={true} />
+            <div className="flex mx-4 mt-2 items-end relative">
+                <div className="w-full absolute -top-15 flex justify-between">
+
+                </div>
                 <div className="px-4 py-2 bg-main text-white rounded-md">
                     {courtName}
                 </div>
