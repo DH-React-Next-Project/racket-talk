@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import Image from "next/image";
 import marker from "@/assets/courts/map-marker.svg";
 import phoneIcon from "@/assets/courts/phone.svg";
-import FavoriteToggle from "@/_components/courts/ToggleFavorite";
+import FavoriteToggle from "@/_components/court/ToggleFavorite";
 
 type Court = {
     court_name: string;
@@ -81,7 +81,6 @@ export default function CourtsPage() {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-[305px] max-w-md shadow-lg space-y-4">
-                        {/* 헤더 */}
                         <div className="flex items-center gap-2">
                             <Image src={marker} alt="marker" width={20} height={20}/>
                             <div className="flex flex-col">
@@ -91,9 +90,7 @@ export default function CourtsPage() {
                             <FavoriteToggle/>
                         </div>
 
-                        {/* 바디 */}
                         <div className="flex gap-4 items-start">
-                            {/* 왼쪽 이미지 */}
                             {courtData.court_image ? (
                                 <img
                                     src={courtData.court_image}
@@ -104,7 +101,6 @@ export default function CourtsPage() {
                                 <div className="w-[119px] h-[119px] bg-gray-200 rounded-md"/>
                             )}
 
-                            {/* 오른쪽 */}
                             <div className="flex flex-col gap-3">
                                 <div className="flex items-center gap-1">
                                     <Image
