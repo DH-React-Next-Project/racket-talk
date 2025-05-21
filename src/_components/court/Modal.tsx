@@ -1,29 +1,38 @@
-import React, {PropsWithChildren} from "react";
+import React, { PropsWithChildren } from "react";
 
-interface ModalDefaultType {
+interface ModalProps {
     onClickToggleModal: () => void;
 }
 
 function Modal({
                    onClickToggleModal,
                    children,
-               }: PropsWithChildren<ModalDefaultType>) {
-    return (
-        <div className="w-[305px] h-[257px] flex items-center justify-center fixed rounded-md translate-y-[50px]">
-            <dialog
-                className="w-[305px] h-[257px] flex flex-col items-center border-none rounded-[10px] shadow-[0_0_30px_rgba(30,30,30,0.185)] bg-white z-[10000]">
-                {children}
-            </dialog>
-            <div
-                className="w-full h-full fixed inset-0 bg-black/50 z-[9999]"
-                onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
+               }: PropsWithChildren<ModalProps>) {
+    /**
+     * e.currentTarget → <div className="fixed …">  (오버레이 자신)
+     * e.target        → 실제 클릭된 DOM 노드
+     * 둘이 같으면 “오버레이 영역”을 클릭한 것 → 모달 닫기
+     */
+    const handleBackdropClick = (e: React.MouseEvent) => {
+        if (e.currentTarget === e.target) {
+            onClickToggleModal();
+        }
+    };
 
-                    if (onClickToggleModal) {
-                        onClickToggleModal();
-                    }
-                }}
-            />
+    return (
+        <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
+            onClick={handleBackdropClick}
+            role="presentation"
+        >
+            <div
+                /* ref 불필요 – 오버레이 vs 타깃 비교만으로 충분 */
+                className="w-[305px] h-[257px] flex flex-col items-center rounded-[10px] shadow-[0_0_30px_rgba(30,30,30,0.185)] bg-white"
+                role="dialog"
+                aria-modal="true"
+            >
+                {children}
+            </div>
         </div>
     );
 }
