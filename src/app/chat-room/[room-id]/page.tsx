@@ -6,6 +6,7 @@ import sentMessage from "@/assets/chat/sent-message.svg";
 import Image from "next/image";
 import { useParams, useSearchParams } from "next/navigation";
 import Header from "@/_components/layouts/Header";
+import OutModal from "@/_components/chat/OutModal";
 
 export default function ChatPage() {
     const params = useParams();
@@ -18,6 +19,7 @@ export default function ChatPage() {
     const [nickName, setNickName] = useState<string | null>(null);
     const socketRef = useRef<WebSocket | null>(null);
     const scrollRef = useRef<HTMLDivElement | null>(null);
+    const [activeModal, setActiveModal] = useState<boolean>(false);
 
     useEffect(() => {
         if (!roomId) return;
@@ -99,6 +101,10 @@ export default function ChatPage() {
     };
 
     const onOutButtonClick = async () => {
+        setActiveModal(true);
+    };
+
+    const roomOut = async () => {
         try {
             const res = await fetch(`/api/chat/leave-room?roomId=${roomId}`, {
                 method: "DELETE",
@@ -118,7 +124,7 @@ export default function ChatPage() {
                 console.error("알 수 없는 오류:", err);
             }
         }
-    };
+    }
 
     return (
         <div className="flex flex-col h-screen pb-24">
@@ -155,6 +161,15 @@ export default function ChatPage() {
                     </button>
                 </div>
             </form>
+            {activeModal ?
+                <OutModal
+                    onConfirm={() => {
+                        setActiveModal(false);
+                        roomOut();
+                    }}
+                    onCancel={() => setActiveModal(false)}
+                />
+            : <></>}
         </div>
     );
 }
