@@ -27,7 +27,7 @@ function Modal({
         >
             <div
                 /* ref 불필요 – 오버레이 vs 타깃 비교만으로 충분 */
-                className="w-[305px] h-[257px] flex flex-col items-center rounded-[10px] shadow-[0_0_30px_rgba(30,30,30,0.185)] bg-white"
+                className="w-[305px] flex flex-col items-center rounded-[10px] shadow-lg bg-white"
                 role="dialog"
                 aria-modal="true"
             >
