@@ -8,28 +8,68 @@ datasource db {
 }
 
 model user {
-  user_id  Int        @id @default(autoincrement())
-  email    String     @unique @db.VarChar(30)
-  password String     @db.VarChar(30)
-  nickname String     @db.VarChar(30)
-  favorite favorite[]
-}
-
-model courts {
-  court_id    Int     @id @default(autoincrement())
-  court_name  String  @db.VarChar(50)
-  address     String? @db.VarChar(100)
-  telno       String? @db.VarChar(50)
-  court_image String? @db.VarChar(500)
-  lng         Decimal @db.Decimal(12, 8)
-  lat         Decimal @db.Decimal(12, 8)
-
-  @@index([court_id], map: "ix_courts_court_id")
+  user_id               Int                     @id @default(autoincrement())
+  email                 String                  @unique @db.VarChar(30)
+  password              String                  @db.VarChar(30)
+  nickname              String                  @db.VarChar(30)
+  chat_message          chat_message[]
+  chat_room_participant chat_room_participant[]
+  favorite              favorite[]
 }
 
 model favorite {
   favorite_id Int      @id @default(autoincrement())
   user_id     Int
   created_at  DateTime @default(now())
-  user        user     @relation(fields: [userId], references: [user_id])
+  court_id    Int?
+  user        user     @relation(fields: [user_id], references: [user_id], map: "favorite_userId_fkey")
+}
+
+model chat_message {
+  message_id Int       @id @default(autoincrement())
+  room_id    Int
+  user_id    Int
+  sent_at    DateTime?
+  message    String    @db.VarChar(255)
+  user       user      @relation(fields: [user_id], references: [user_id])
+}
+
+model chat_room {
+  room_id               Int                     @id @default(autoincrement())
+  room_name             String?                 @db.VarChar(100)
+  memo                  String?                 @db.VarChar(50)
+  court_detail_id       String                  @db.VarChar(200)
+  chat_room_participant chat_room_participant[]
+}
+
+model chat_room_participant {
+  user_id   Int
+  room_id   Int
+  joined_at DateTime?
+  chat_room chat_room @relation(fields: [room_id], references: [room_id])
+  user      user      @relation(fields: [user_id], references: [user_id])
+
+  @@id([user_id, room_id])
+}
+
+model court {
+  court_id     Int            @id @default(autoincrement())
+  court_name   String         @db.VarChar(50)
+  address      String?        @db.VarChar(100)
+  telno        String?        @db.VarChar(50)
+  court_image  String?        @db.VarChar(500)
+  lng          Decimal        @db.Decimal(12, 8)
+  lat          Decimal        @db.Decimal(12, 8)
+  court_detail court_detail[]
+
+  @@index([court_id], map: "ix_court_court_id")
+}
+
+model court_detail {
+  court_detail_id       String  @id @db.VarChar(200)
+  court_id              Int
+  detail_court_name     String  @db.VarChar(50)
+  detail_operating_time String? @db.VarChar(50)
+  target_user_info      String? @db.VarChar(50)
+  court                 court   @relation(fields: [court_id], references: [court_id], onDelete: NoAction, onUpdate: NoAction)
 }
