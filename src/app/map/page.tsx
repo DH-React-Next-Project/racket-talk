@@ -136,7 +136,9 @@ function Header({ court }: { court: Court }) {
       <div className="flex flex-col">
         <div className="flex items-center gap-1">
           <span className="text-[15px] font-bold">{court.court_name}</span>
-          <FavoriteToggle />
+          <div style={{paddingLeft: "10px",paddingBottom : "7px"}}>
+            <FavoriteToggle/>
+          </div>
         </div>
         <span className="text-[8px]">{court.address ?? "주소 없음"}</span>
       </div>
