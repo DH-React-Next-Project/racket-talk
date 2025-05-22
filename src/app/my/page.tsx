@@ -5,85 +5,70 @@ import profile from "@/assets/my/tennis-bold.svg";
 import starFilled from "@/assets/my/star-filled.svg";
 import starOutline from "@/assets/my/star-outline.svg";
 import MyPageButton from "@/_components/my/MyPageButton";
-import courtImage from "@/assets/my/sample.svg";
 
 import LogoutModal from "@/_components/my/LogoutModal";
 import WithdrawModal from "@/_components/my/WithdrawModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-{/* 더미 데이터 */ }
-const mockFavorites = [
-  {
-    id: 1,
-    name: "보라매 공원 테니스장",
-    address: "서울특별시 동작구 신대방제2동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: true,
-  },
-  {
-    id: 2,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-  {
-    id: 3,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-  {
-    id: 4,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-  {
-    id: 5,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-  {
-    id: 6,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-  {
-    id: 7,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-  {
-    id: 8,
-    name: "한강시민공원 테니스장",
-    address: "서울특별시 마포구 상암동",
-    imageUrl: "/assets/my/image 5.svg",
-    isFavorite: false,
-  },
-];
+type Court = {
+  court_id: number;
+  court_name: string;
+  address: string | null;
+  court_image: string | null;
+  isFavorite: boolean;
+};
 
 const MyPage = () => {
-  const [favorites, setFavorites] = useState(mockFavorites);
-  const [showModal, setShowModal] = useState(false);
-  const toggleFavorite = (id: number) => {
-    setFavorites((prev) =>
-      prev.map((court) =>
-        court.id === id ? { ...court, isFavorite: !court.isFavorite } : court
-      )
-    );
-  };
-
+  const [favorites, setFavorites] = useState<Court[]>([]);
+  const [activeModal, setActiveModal] = useState<"logout" | "withdraw" | null>(null);
   const router = useRouter();
+  const [user, setUser] = useState<{ nickname: string; email: string } | null>(null);
+
+  useEffect(() => {
+    const fetchMyPageData = async () => {
+      const res = await fetch("/api/my", {
+        credentials: "include", // 쿠키 포함
+      });
+
+      if (!res.ok) {
+        console.error("마이페이지 정보 불러오기 실패");
+        return;
+      }
+
+      const data = await res.json();
+      console.log("✅ 마이페이지 데이터:", data);
+      setUser(data.user);
+      setFavorites(data.favorites);
+    };
+
+    fetchMyPageData();
+  }, []);
+
+  const toggleFavorite = async (courtId: number, isFavorite: boolean) => {
+    const method = isFavorite ? "DELETE" : "POST";
+
+    const res = await fetch("/api/my", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ court_id: courtId }),
+      credentials: "include",
+    });
+
+    console.log("즐겨찾기 응답 상태:", res.status);
+
+    if (res.ok) {
+      setFavorites((prev) =>
+        prev.map((court) =>
+          court.court_id === courtId
+            ? { ...court, isFavorite: !isFavorite }
+            : court
+        )
+      );
+    } else {
+      console.error("즐겨찾기 토글 실패");
+    }
+  };
 
   return (
     <>
@@ -97,32 +82,36 @@ const MyPage = () => {
             <Image src={profile} alt="profile" width={50} height={50} />
           </div>
           <div className="mt-2">
-            <div className="text-[var(--color-charcoal)] font-semibold">유저 님</div>
-            <div className="text-[var(--color-lightGray)]">test@naver.com</div>
+            <div className="text-[var(--color-charcoal)] font-semibold">
+              {user?.nickname ?? "유저"} 님
+            </div>
+            <div className="text-[var(--color-lightGray)]">
+              {user?.email ?? "이메일 정보 없음"}
+            </div>
           </div>
         </div>
 
         <div className="flex justify-center">
-          <MyPageButton text="로그아웃" onClick={() => setShowModal(true)} />
+          <MyPageButton text="로그아웃" onClick={() => setActiveModal("logout")} />
+          <MyPageButton text="회원탈퇴" onClick={() => setActiveModal("withdraw")} />
 
-          {showModal && (
+          {activeModal === "logout" && (
             <LogoutModal
               onConfirm={() => {
-                setShowModal(false);
+                setActiveModal(null);
                 router.push("/");
               }}
-              onCancel={() => setShowModal(false)}
+              onCancel={() => setActiveModal(null)}
             />
           )}
 
-          <MyPageButton text="회원탈퇴" onClick={() => setShowModal(true)} />
-          {showModal && (
+          {activeModal === "withdraw" && (
             <WithdrawModal
               onConfirm={() => {
-                setShowModal(false);
+                setActiveModal(null);
                 router.push("/");
               }}
-              onCancel={() => setShowModal(false)}
+              onCancel={() => setActiveModal(null)}
             />
           )}
         </div>
@@ -134,20 +123,23 @@ const MyPage = () => {
       </div>
 
       {/* 즐겨찾기한 테니스장 리스트 */}
-      <div className="max-h-[623px] overflow-y-scroll">
+      <div className="max-h-[623px] overflow-y-scroll pb-[80px]">
         {favorites.map((court) => (
           <div
-            key={court.id}
+            key={court.court_id}
             className="flex justify-between items-center px-4 py-3 border-b"
           >
             <div className="flex items-center">
               <Image
-                src={courtImage}
+                src={court.court_image ?? "/assets/my/sample.svg"}
                 alt="테니스장"
+                width={60}
+                height={60}
                 className="w-[60px] h-[60px] rounded-md mr-4 object-cover"
               />
+
               <div>
-                <div className="font-semibold text-[15px]">{court.name}</div>
+                <div className="font-semibold text-[15px]">{court.court_name}</div>
                 <div className="text-gray-500 text-sm">{court.address}</div>
               </div>
             </div>
@@ -157,7 +149,7 @@ const MyPage = () => {
               alt="즐겨찾기"
               width={24}
               height={24}
-              onClick={() => toggleFavorite(court.id)}
+              onClick={() => toggleFavorite(court.court_id, court.isFavorite)}
               className="cursor-pointer"
             />
           </div>

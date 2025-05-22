@@ -1,10 +1,15 @@
-const MyPageButton = (props: any) => {
+type MyPageButtonProps = {
+  text: string;
+  onClick?: () => void;
+};
+
+const MyPageButton = ({ text, onClick }: MyPageButtonProps) => {
   return (
     <button
-      onClick={props.onClick}
+      onClick={onClick}
       className="mx-2 bg-white text-sm text-black w-[106px] h-[36px] rounded-lg hover:bg-main hover:text-white"
     >
-      {props.text}
+      {text}
     </button>
   );
 };
