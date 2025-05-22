@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/utils/prismaClient";
 import { NextRequest, NextResponse } from "next/server";
 
-// ✅ 유저 정보 + 즐겨찾기한 코트 목록 조회
+// 유저 정보 + 즐겨찾기한 코트 목록 조회
 export async function GET() {
   try {
     const cookieStore = cookies();
@@ -59,7 +59,7 @@ export async function GET() {
   }
 }
 
-// ✅ 즐겨찾기 추가
+// 즐겨찾기 추가
 export async function POST(req: NextRequest) {
   try {
     const userIdRaw = cookies().get("user_id")?.value;
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// ✅ 즐겨찾기 삭제
+// 즐겨찾기 삭제
 export async function DELETE(req: NextRequest) {
   try {
     const userIdRaw = cookies().get("user_id")?.value;
