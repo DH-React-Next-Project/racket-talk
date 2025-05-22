@@ -4,11 +4,10 @@ type Message = {
     time: Date;
 };
 type Room = {
-    id: number;
-    courtId: string;
+    room_id: number;
+    courtDetailName: string;
     roomName: string;
-    ownerId: string;
-    lastMessage: Message;
+    message: string;
     memo: string;
 }
 type CourtChats = {
