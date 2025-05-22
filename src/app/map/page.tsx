@@ -1,6 +1,5 @@
 "use client";
 
-import Script from "next/script";
 import { useEffect, useState } from "react";
 import Modal from "@/_components/court/Modal";
 import { Court } from "@/types/court";
@@ -16,7 +15,6 @@ declare global {
 }
 
 const MapPage=()=> {
-  const [mapLoaded, setMapLoaded] = useState(false);
   const [courtList, setCourtList] = useState([]);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,77 +36,78 @@ const MapPage=()=> {
   }, []);
 
   useEffect(() => {
-    if (!mapLoaded) return;
+    const scriptId = "kakao-map-script";
+    const existingScript = document.getElementById(scriptId);
 
-    if (!window.kakao || !window.kakao.maps) {
-      console.error("❌ Kakao map SDK not available");
-      return;
-    }
-
-    window.kakao.maps.load(() => {
-      console.log("✅ Kakao map loaded");
-
-      const container = document.getElementById("map");
-      if (!container) {
-        console.error("❌ map container not found");
+    const initMap = () => {
+      if (!window.kakao || !window.kakao.maps) {
+        console.error("❌ Kakao map SDK not available");
         return;
       }
 
-      const options = {
-        center: new window.kakao.maps.LatLng(37.544318, 127.056145),
-        level: 7,
-      };
+      window.kakao.maps.load(() => {
+        console.log("✅ Kakao map loaded");
 
-      const map = new window.kakao.maps.Map(container, options);
+        const container = document.getElementById("map");
+        if (!container) {
+          console.error("❌ map container not found");
+          return;
+        }
 
+        const options = {
+          center: new window.kakao.maps.LatLng(37.544318, 127.056145),
+          level: 7,
+        };
 
-      if (!Array.isArray(courtList)) {
-        console.error("❌ courts is not an array:", courtList);
-        return;
-      }
+        const map = new window.kakao.maps.Map(container, options);
 
-      courtList.forEach((court) => {
-        const position = new window.kakao.maps.LatLng(court.lat, court.lng);
+        if (!Array.isArray(courtList)) {
+          console.error("❌ courts is not an array:", courtList);
+          return;
+        }
 
-        const marker = new window.kakao.maps.Marker({
-          map,
-          position,
-          //카카오맵 마커이미지는 public/ 만 접근가능하여 public/img 사용함
-          image: new window.kakao.maps.MarkerImage(
-            "/img/map-marker.png",
-            new window.kakao.maps.Size(25, 36),
-            { offset: new window.kakao.maps.Point(20, 36) }
-          ),
-        });
+        courtList.forEach((court) => {
+          const position = new window.kakao.maps.LatLng(parseFloat(court.lat), parseFloat(court.lng));
 
-        window.kakao.maps.event.addListener(marker, "click", async () => {
-          try {
-            const res = await fetch(`/api/court/${court.court_id}`);
-            if (!res.ok) throw new Error("Failed to fetch court data");
-            const data = await res.json();
-            setSelectedCourt(data);
-            setIsModalOpen(true);
-          } catch (err) {
-            console.error("❌ Failed to fetch court details:", err);
-          }
+          const marker = new window.kakao.maps.Marker({
+            map,
+            position,
+            image: new window.kakao.maps.MarkerImage(
+              "/img/map-marker.png",
+              new window.kakao.maps.Size(25, 36),
+              { offset: new window.kakao.maps.Point(20, 36) }
+            ),
+          });
+
+          window.kakao.maps.event.addListener(marker, "click", async () => {
+            try {
+              const res = await fetch(`/api/court/${court.court_id}`);
+              if (!res.ok) throw new Error("Failed to fetch court data");
+              const data = await res.json();
+              setSelectedCourt(data);
+              setIsModalOpen(true);
+            } catch (err) {
+              console.error("❌ Failed to fetch court details:", err);
+            }
+          });
         });
       });
-    });
-  }, [mapLoaded, courtList]);
+    };
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`;
+      script.async = true;
+      script.onload = initMap;
+      document.head.appendChild(script);
+    } else {
+      initMap();
+    }
+  }, [courtList]);
 
   return (
     <>
-      <Script
-        strategy="afterInteractive"
-        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`}
-        onLoad={() => {
-          console.log("✅ Kakao SDK script loaded");
-          setMapLoaded(true);
-        }}
-        onError={() => {
-          console.error("❌ Failed to load Kakao Maps script");
-        }}
-      />
       <div id="map" style={{ width: "100%", height: "100vh" }}></div>
 
       //테니스장 상세 팝업
