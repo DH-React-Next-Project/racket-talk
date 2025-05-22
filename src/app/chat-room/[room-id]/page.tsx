@@ -25,9 +25,21 @@ export default function ChatPage() {
 
         const connectWebSocket = async () => {
             await fetch("/api/ws");
-            const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}?roomId=${roomId}`);
+            const ws = new WebSocket(
+                `${process.env.NEXT_PUBLIC_WS_URL}?roomId=${roomId}`
+            );
 
-            ws.onopen = () => {};
+            ws.onopen = async () => {
+                try {
+                    const res = await fetch(
+                        `/api/chat/history?roomId=${roomId}`
+                    );
+                    const data = await res.json();
+                    setMessages(data.messages);
+                } catch (error) {
+                    console.error("Error loading history:", error);
+                }
+            };
 
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);

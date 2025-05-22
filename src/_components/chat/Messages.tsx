@@ -21,15 +21,15 @@ export default function Messages(prop: MessagesProp) {
     }, [messages]);
     let prevDate = new Date();
     if (messages.length > 0) {
-        prevDate = messages[0].time;
+        prevDate = new Date(messages[0].time);
     }
 
     const printDate = (date: Date) => {
         if (prevDate.getDate() !== date.getDate()) {
             prevDate = date;
             return (
-                <div className="text-lightGray text-xs text-center my-2">
-                    {dayjs(date).format("YYYY-MM-DD")}
+                <div className="bg-lightGray text-white text-xs text-center my-2 rounded-md mx-auto w-30 py-1">
+                    {dayjs(date).format("YYYY년 MM월 DD일")}
                 </div>
             );
         } else {
@@ -47,7 +47,7 @@ export default function Messages(prop: MessagesProp) {
                 const time = dayjs(m.time).format("hh:mm A");
                 return (
                     <div key={idx}>
-                        {printDate(m.time)}
+                        {printDate(new Date(m.time))}
                         <div className="">
                             <div
                                 className={
