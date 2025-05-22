@@ -29,6 +29,7 @@ model chat_message {
   room_id                                           Int
   user_id                                           Int
   sent_at                                           DateTime?
+  message                                           String      @db.VarChar(255)
   user                                              user        @relation(fields: [user_id], references: [user_id])
 }
 
