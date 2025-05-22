@@ -5,9 +5,8 @@ import profile from "@/assets/my/tennis-bold.svg";
 import starFilled from "@/assets/my/star-filled.svg";
 import starOutline from "@/assets/my/star-outline.svg";
 import MyPageButton from "@/_components/my/MyPageButton";
+import ConfirmModal from "@/_components/my/ConfirmModal";
 
-import LogoutModal from "@/_components/my/LogoutModal";
-import WithdrawModal from "@/_components/my/WithdrawModal";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -28,7 +27,7 @@ const MyPage = () => {
   useEffect(() => {
     const fetchMyPageData = async () => {
       const res = await fetch("/api/my", {
-        credentials: "include", // 쿠키 포함
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -37,7 +36,6 @@ const MyPage = () => {
       }
 
       const data = await res.json();
-      console.log("✅ 마이페이지 데이터:", data);
       setUser(data.user);
       setFavorites(data.favorites);
     };
@@ -45,6 +43,7 @@ const MyPage = () => {
     fetchMyPageData();
   }, []);
 
+  // 즐겨찾기 별 선택
   const toggleFavorite = async (courtId: number, isFavorite: boolean) => {
     const method = isFavorite ? "DELETE" : "POST";
 
@@ -55,16 +54,20 @@ const MyPage = () => {
       credentials: "include",
     });
 
-    console.log("즐겨찾기 응답 상태:", res.status);
-
     if (res.ok) {
-      setFavorites((prev) =>
-        prev.map((court) =>
-          court.court_id === courtId
-            ? { ...court, isFavorite: !isFavorite }
-            : court
-        )
-      );
+      setFavorites((prev) => {
+        if (isFavorite) {
+          // 즐겨찾기 삭제 → 리스트에서 제거
+          return prev.filter((court) => court.court_id !== courtId);
+        } else {
+          // 즐겨찾기 추가 → 상태만 토글 (or 전체 리패치)
+          return prev.map((court) =>
+            court.court_id === courtId
+              ? { ...court, isFavorite: true }
+              : court
+          );
+        }
+      });
     } else {
       console.error("즐겨찾기 토글 실패");
     }
@@ -95,21 +98,16 @@ const MyPage = () => {
           <MyPageButton text="로그아웃" onClick={() => setActiveModal("logout")} />
           <MyPageButton text="회원탈퇴" onClick={() => setActiveModal("withdraw")} />
 
-          {activeModal === "logout" && (
-            <LogoutModal
+          {activeModal && (
+            <ConfirmModal
+              message={
+                activeModal === "logout"
+                  ? "정말 로그아웃 하시겠습니까?"
+                  : "정말 탈퇴하시겠습니까?"
+              }
               onConfirm={() => {
                 setActiveModal(null);
-                router.push("/");
-              }}
-              onCancel={() => setActiveModal(null)}
-            />
-          )}
-
-          {activeModal === "withdraw" && (
-            <WithdrawModal
-              onConfirm={() => {
-                setActiveModal(null);
-                router.push("/");
+                router.push("/"); // 실제 로그아웃/탈퇴 로직 추가 가능
               }}
               onCancel={() => setActiveModal(null)}
             />
@@ -122,7 +120,6 @@ const MyPage = () => {
         <span className="text-sm text-gray-500">총 {favorites.length}개</span>
       </div>
 
-      {/* 즐겨찾기한 테니스장 리스트 */}
       <div className="max-h-[623px] overflow-y-scroll pb-[80px]">
         {favorites.map((court) => (
           <div
@@ -137,7 +134,6 @@ const MyPage = () => {
                 height={60}
                 className="w-[60px] h-[60px] rounded-md mr-4 object-cover"
               />
-
               <div>
                 <div className="font-semibold text-[15px]">{court.court_name}</div>
                 <div className="text-gray-500 text-sm">{court.address}</div>

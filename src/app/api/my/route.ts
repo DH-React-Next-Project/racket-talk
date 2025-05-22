@@ -2,13 +2,14 @@ import { cookies } from "next/headers";
 import { prisma } from "@/utils/prismaClient";
 import { NextRequest, NextResponse } from "next/server";
 
-// 유저 정보 + 즐겨찾기 코트 목록 조회
+// ✅ 유저 정보 + 즐겨찾기한 코트 목록 조회
 export async function GET() {
   try {
     const cookieStore = cookies();
-    const user_id = Number(cookieStore.get("user_id")?.value);
+    const userIdRaw = cookieStore.get("user_id")?.value;
+    const user_id = userIdRaw ? Number(userIdRaw) : null;
 
-    if (!user_id) {
+    if (!user_id || isNaN(user_id)) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -25,41 +26,53 @@ export async function GET() {
     }
 
     const favorites = await prisma.favorite.findMany({
-      where: { user_id: user_id },
-      include: { court: true },
+      where: { user_id },
+      select: { court_id: true },
     });
 
-    const formattedFavorites = favorites.map((f) => ({
-      court_id: f.court.court_id,
-      court_name: f.court.court_name,
-      address: f.court.address,
-      court_image: f.court.court_image,
-      isFavorite: true,
-    }));
+    const courtIds = favorites
+      .map((f) => f.court_id)
+      .filter((id): id is number => id !== null);
+
+    const courts = await prisma.court.findMany({
+      where: {
+        court_id: { in: courtIds },
+      },
+      select: {
+        court_id: true,
+        court_name: true,
+        address: true,
+        court_image: true,
+      },
+    });
 
     return NextResponse.json({
       user,
-      favorites: formattedFavorites,
+      favorites: courts.map((court) => ({
+        ...court,
+        isFavorite: true,
+      })),
     });
   } catch (error) {
-    console.error("❌ Failed to fetch my page data:", error);
+    console.error("❌ GET /api/my Error:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
 
-// 즐겨찾기 추가
+// ✅ 즐겨찾기 추가
 export async function POST(req: NextRequest) {
-  const cookieStore = cookies();
-  const user_id = Number(cookieStore.get("user_id")?.value);
-  const { court_id } = await req.json();
-
-  if (!user_id || !court_id) {
-    return NextResponse.json({ message: "Bad Request" }, { status: 400 });
-  }
-
   try {
+    const userIdRaw = cookies().get("user_id")?.value;
+    const user_id = userIdRaw ? Number(userIdRaw) : null;
+
+    const { court_id } = await req.json();
+
+    if (!user_id || isNaN(user_id) || !court_id) {
+      return NextResponse.json({ message: "Bad Request" }, { status: 400 });
+    }
+
     const exists = await prisma.favorite.findFirst({
-      where: { user_id: user_id, court_id: court_id },
+      where: { user_id, court_id },
     });
 
     if (exists) {
@@ -67,40 +80,35 @@ export async function POST(req: NextRequest) {
     }
 
     await prisma.favorite.create({
-      data: {
-        user: { connect: { user_id } },
-        court: { connect: { court_id } },
-      },
+      data: { user_id, court_id },
     });
 
     return NextResponse.json({ message: "Favorite added!" }, { status: 201 });
   } catch (error) {
-    console.error("❌ Favorite Add Error:", error);
+    console.error("❌ POST /api/my Error:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
 
-// 즐겨찾기 삭제
+// ✅ 즐겨찾기 삭제
 export async function DELETE(req: NextRequest) {
-  const cookieStore = cookies();
-  const user_id = Number(cookieStore.get("user_id")?.value);
-  const { court_id } = await req.json();
-
-  if (!user_id || !court_id) {
-    return NextResponse.json({ message: "Bad Request" }, { status: 400 });
-  }
-
   try {
+    const userIdRaw = cookies().get("user_id")?.value;
+    const user_id = userIdRaw ? Number(userIdRaw) : null;
+
+    const { court_id } = await req.json();
+
+    if (!user_id || isNaN(user_id) || !court_id) {
+      return NextResponse.json({ message: "Bad Request" }, { status: 400 });
+    }
+
     await prisma.favorite.deleteMany({
-      where: {
-        user_id: user_id,
-        court_id: court_id,
-      },
+      where: { user_id, court_id },
     });
 
     return NextResponse.json({ message: "Favorite removed!" }, { status: 200 });
   } catch (error) {
-    console.error("❌ Favorite Delete Error:", error);
+    console.error("❌ DELETE /api/my Error:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

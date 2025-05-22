@@ -18,11 +18,12 @@ model user {
 }
 
 model favorite {
-  favorite_id Int      @id @default(autoincrement())
-  user_id     Int
-  created_at  DateTime @default(now())
-  court_id    Int?
-  user        user     @relation(fields: [user_id], references: [user_id], map: "favorite_userId_fkey")
+  favorite_id   Int      @id @default(autoincrement())
+  user_id       Int
+  created_at    DateTime @default(now())
+  court_id      Int?
+  favorite_memo String?  @db.VarChar(100)
+  user          user     @relation(fields: [user_id], references: [user_id], map: "favorite_userId_fkey")
 }
 
 model chat_message {
