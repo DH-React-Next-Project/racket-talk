@@ -48,13 +48,29 @@ export async function GET() {
             clients.push({ id: nickname, ws });
             ws.send(JSON.stringify({ type: "id", id: nickname }));
 
-            ws.on("message", (message: string) => {
+            ws.on("message", async (message: string) => {
                 if (!rooms.has(roomId)) {
                     rooms.set(roomId, new Set());
                 }
                 rooms.get(roomId)!.add(ws);
-                const data = JSON.parse(message);
+                const data: Message = JSON.parse(message);
                 console.log(data);
+
+                if (!user) {
+                    throw new Error(
+                        `User with nickname '${data.username}' not found.`
+                    );
+                }
+                const newMessage = await prisma.chat_message.create({
+                    data: {
+                        room_id: Number(data.roomId),
+                        user_id: Number(clientId),
+                        message: data.message,
+                        sent_at: new Date(data.time),
+                    },
+                });
+
+                console.log("Message saved:", newMessage);
                 rooms.get(roomId)?.forEach((client) => {
                     if (client.readyState === WebSocket.OPEN) {
                         client.send(message.toString());

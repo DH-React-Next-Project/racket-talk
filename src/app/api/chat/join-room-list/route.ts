@@ -1,13 +1,13 @@
-import {NextRequest, NextResponse} from "next/server";
-import {prisma} from "@/utils/prismaClient";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/utils/prismaClient";
 
 export async function GET(req: NextRequest) {
     const userId = req.cookies.get("user_id")?.value;
     if (!userId) {
-        return NextResponse.json({error: "Unauthorized"}, {status: 401});
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     try {
-        const courtChats:RawData[] = await prisma.$queryRaw`
+        const courtChats: RawData[] = await prisma.$queryRaw`
             SELECT DISTINCT ON (r.room_id)
                 p.user_id,
                 r.room_id,
@@ -27,14 +27,16 @@ export async function GET(req: NextRequest) {
         const sendData: CourtChats[] = [];
         courtChats.forEach((room: RawData) => {
             const courtName = room.court_name;
-            const roomData:Room = {
-                room_id: room.room_id,
+            const roomData: Room = {
+                roomId: room.room_id,
                 courtDetailName: room.detail_court_name,
                 roomName: room.room_name,
                 message: room.message ? room.message : "메세지가 없습니다.",
                 memo: room.memo,
             };
-            const courtIndex = sendData.findIndex((court) => court.courtName === courtName);
+            const courtIndex = sendData.findIndex(
+                (court) => court.courtName === courtName
+            );
             if (courtIndex === -1) {
                 sendData.push({
                     courtName: courtName,
@@ -47,7 +49,10 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ data: sendData });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }
 type RawData = {
@@ -58,4 +63,4 @@ type RawData = {
     detail_court_name: string;
     court_name: string;
     message: string;
-}
+};

@@ -1,10 +1,11 @@
 type Message = {
+    roomId: number;
     username: string;
     message: string;
     time: Date;
 };
 type Room = {
-    room_id: number;
+    roomId: number;
     courtDetailName: string;
     roomName: string;
     message: string;

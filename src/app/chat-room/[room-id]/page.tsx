@@ -30,9 +30,7 @@ export default function ChatPage() {
                 `ws://172.16.20.105:3001?roomId=${roomId}`
             );
 
-            ws.onopen = () => {
-                console.log("WebSocket connection established");
-            };
+            ws.onopen = () => {};
 
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -42,8 +40,9 @@ export default function ChatPage() {
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         {
+                            roomId: Number(roomId),
                             message: data.message,
-                            username: data.from,
+                            username: data.username,
                             time: new Date(),
                         },
                     ]);
@@ -75,7 +74,12 @@ export default function ChatPage() {
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message && socketRef.current && userId) {
-            const messageData = { room_id: roomId, from: userId, message };
+            const messageData: Message = {
+                roomId: Number(roomId),
+                username: userId,
+                message: message,
+                time: new Date(),
+            };
             socketRef.current.send(JSON.stringify(messageData));
             setMessage("");
         }
@@ -83,20 +87,22 @@ export default function ChatPage() {
 
     const onBackButtonClick = () => {
         window.history.back();
-    }
+    };
 
     const onOutButtonClick = () => {
         //TODO 방 나가기 로직 구현 필요
         console.log("방 나가기");
-    }
+    };
 
     return (
         <div className="flex flex-col h-screen pb-24">
-            <Header onBackButtonClick={onBackButtonClick} onOutButtonClick={onOutButtonClick} showButton={true} />
+            <Header
+                onBackButtonClick={onBackButtonClick}
+                onOutButtonClick={onOutButtonClick}
+                showButton={true}
+            />
             <div className="flex mx-4 mt-2 items-end relative">
-                <div className="w-full absolute -top-15 flex justify-between">
-
-                </div>
+                <div className="w-full absolute -top-15 flex justify-between"></div>
                 <div className="px-4 py-2 bg-main text-white rounded-md">
                     {courtName}
                 </div>

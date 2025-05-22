@@ -13,13 +13,13 @@ const ChatRoom = (props: CourtChats[]) => {
                     {court.rooms.map((room) => (
                         <Link
                             href={{
-                                pathname: `/chat-room/${room.room_id}`,
+                                pathname: `/chat-room/${room.roomId}`,
                                 query: {
                                     courtName: room.courtDetailName,
                                     roomName: room.roomName,
                                 },
                             }}
-                            key={room.room_id}
+                            key={room.roomId}
                             className="p-2 flex"
                         >
                             <Image
