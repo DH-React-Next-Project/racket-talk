@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     const userIdRaw = cookies().get("user_id")?.value;
     const user_id = userIdRaw ? Number(userIdRaw) : null;
 
-    const { court_id } = await req.json();
+    const { court_id, favorite_memo } = await req.json(); // 🟡 메모도 함께 받기
 
     if (!user_id || isNaN(user_id) || !court_id) {
       return NextResponse.json({ message: "Bad Request" }, { status: 400 });
@@ -80,7 +80,11 @@ export async function POST(req: NextRequest) {
     }
 
     await prisma.favorite.create({
-      data: { user_id, court_id },
+      data: {
+        user_id,
+        court_id,
+        favorite_memo,
+      },
     });
 
     return NextResponse.json({ message: "Favorite added!" }, { status: 201 });

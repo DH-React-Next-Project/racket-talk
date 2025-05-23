@@ -19,7 +19,7 @@ const MapPage = () => {
     const [courtList, setCourtList] = useState<Court[]>([]);
     const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [favoriteCourtIds, setFavoriteCourtIds] = useState<number[]>([]); // ✅ 추가됨
 
     //테니스장정보 가져오기
     useEffect(() => {
@@ -34,6 +34,22 @@ const MapPage = () => {
         };
 
         fetchCourts();
+    }, []);
+
+    // 즐겨찾기 정보 가져오기
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            try {
+                const res = await fetch("/api/my");
+                const data = await res.json();
+                const ids = data.favorites.map((f: any) => f.court_id);
+                setFavoriteCourtIds(ids);
+            } catch (error) {
+                console.error("❌ Failed to fetch favorites:", error);
+            }
+        };
+
+        fetchFavorites();
     }, []);
 
     useEffect(() => {
@@ -76,7 +92,7 @@ const MapPage = () => {
                         image: new window.kakao.maps.MarkerImage(
                             "/img/map-marker.png",
                             new window.kakao.maps.Size(25, 36),
-                            {offset: new window.kakao.maps.Point(20, 36)}
+                            { offset: new window.kakao.maps.Point(20, 36) }
                         ),
                     });
 
@@ -136,7 +152,10 @@ const MapPage = () => {
             {isModalOpen && selectedCourt && (
                 <Modal onClickToggleModal={() => setIsModalOpen(false)}>
                     <div className="p-6 w-[305px] max-w-md shadow-lg space-y-4">
-                        <Header court={selectedCourt}/>
+                        <Header
+                            court={selectedCourt}
+                            isFavorite={favoriteCourtIds.includes(selectedCourt.court_id)}
+                        />
                         <Body court={selectedCourt}/>
                         <Footer courtId={selectedCourt.court_id}/>
                     </div>
@@ -148,17 +167,21 @@ const MapPage = () => {
 
 export default MapPage;
 
-
 // Modal 내부 UI 컴포넌트 복제 (Header, Body, Footer)
-function Header({court}: { court: Court }) {
+type HeaderProps = {
+    court: Court;
+    isFavorite: boolean;
+};
+
+function Header({ court, isFavorite }: HeaderProps) {
     return (
         <div className="flex items-center gap-2">
-            <Image src={marker} alt="marker" width={20} height={20}/>
+            <Image src={marker} alt="marker" width={20} height={20} />
             <div className="flex flex-col">
                 <div className="flex items-center gap-1">
                     <span className="text-[15px] font-bold">{court.court_name}</span>
-                    <div style={{paddingLeft: "10px", paddingBottom: "7px"}}>
-                        <FavoriteToggle/>
+                    <div style={{ paddingLeft: "10px", paddingBottom: "7px" }}>
+                        <FavoriteToggle isFavorite={isFavorite} />
                     </div>
                 </div>
                 <span className="text-[8px]">{court.address ?? "주소 없음"}</span>

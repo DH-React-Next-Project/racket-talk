@@ -1,4 +1,3 @@
-// src/app/api/court-detail/[court_id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/prismaClient";
 
@@ -31,3 +30,22 @@ export async function GET(_req: NextRequest, { params }: Context) {
 
     return NextResponse.json(flattened);
 }
+
+export async function POST(req: NextRequest) {
+    const body = await req.json();
+    const { user_id, court_id, favorite_memo } = body;
+  
+    if (!user_id || !court_id) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+  
+    const created = await prisma.favorite.create({
+      data: {
+        user_id,
+        court_id,
+        favorite_memo,
+      },
+    });
+  
+    return NextResponse.json(created);
+  }

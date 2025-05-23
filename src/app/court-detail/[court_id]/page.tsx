@@ -2,7 +2,6 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import phoneIcon from "@/assets/courts/phone-black.svg";
 import clockIcon from "@/assets/courts/clock.svg";
@@ -27,7 +26,7 @@ export default function CourtDetailPage() {
     const [details, setDetails] = useState<CourtDetail[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const router = useRouter();
+    const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
         if (!court_id) return;
@@ -86,7 +85,7 @@ export default function CourtDetailPage() {
                         </h2>
                         <div className="ml-2">
                             <button onClick={() => setShowModal(true)}>
-                                <FavoriteToggle />
+                                <FavoriteToggle isFavorite={isFavorite} />
                             </button>
                         </div>
                     </div>
@@ -116,7 +115,17 @@ export default function CourtDetailPage() {
                     address={master.address ?? ""}
                     onClose={() => setShowModal(false)}
                     onCancel={() => setShowModal(false)}
-                    onConfirm={() => {
+                    onConfirm={async (memo: string) => {
+                        await fetch("/api/my", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                court_id: master.court_id,
+                                favorite_memo: memo,
+                            }),
+                        });
+
+                        setIsFavorite(true);
                         setShowModal(false);
                     }}
                 />
