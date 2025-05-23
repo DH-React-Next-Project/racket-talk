@@ -28,15 +28,21 @@ export default function CourtChatListPage() {
             });
     }, [courtId, courtDetailId]);
     if (loading) {
-        return <p className="p-6">로딩 중…</p>;
+        return (
+            <div className="flex flex-col h-screen pb-24 pt-20">
+                <Header showBackButton={true} />
+                <p className="p-6">로딩중...</p>
+            </div>
+        );
     }
     return (
         <div className="flex flex-col h-screen pb-24 pt-20">
-            <Header showBackButton={true}/>
+            <Header showBackButton={true} />
+
             {Object.keys(roomList).length > 0 ? (
                 <CourtChatRoom data={roomList} />
             ) : (
-                <p className="p-6">생성된 채팅방이 없습니다.</p>
+                <div className="text-charcoal font-bold text-xl m-4">생성된 채팅방이 없습니다.</div>
             )}
         </div>
     );

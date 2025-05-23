@@ -20,6 +20,7 @@ export default function ChatPage() {
     const socketRef = useRef<WebSocket | null>(null);
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const [activeModal, setActiveModal] = useState<boolean>(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!roomId) return;
@@ -38,6 +39,7 @@ export default function ChatPage() {
                     );
                     const data = await res.json();
                     setMessages(data.messages);
+                    setLoading(false);
                 } catch (error) {
                     console.error("Error loading history:", error);
                 }
@@ -120,7 +122,7 @@ export default function ChatPage() {
                 console.error("알 수 없는 오류:", err);
             }
         }
-    }
+    };
 
     return (
         <div className="flex flex-col h-screen pb-24 pt-20">
@@ -138,7 +140,14 @@ export default function ChatPage() {
                     {roomName}
                 </div>
             </div>
-            <Messages messages={messages} username={nickName ? nickName : ""} />
+            {loading ? (
+                <p>로딩중</p>
+            ) : (
+                <Messages
+                    messages={messages}
+                    username={nickName ? nickName : ""}
+                />
+            )}
             <form onSubmit={sendMessage} className="p-4">
                 <div className="flex">
                     <input
@@ -157,7 +166,7 @@ export default function ChatPage() {
                     </button>
                 </div>
             </form>
-            {activeModal ?
+            {activeModal ? (
                 <OutModal
                     onConfirm={() => {
                         setActiveModal(false);
@@ -165,7 +174,9 @@ export default function ChatPage() {
                     }}
                     onCancel={() => setActiveModal(false)}
                 />
-            : <></>}
+            ) : (
+                <></>
+            )}
         </div>
     );
 }
