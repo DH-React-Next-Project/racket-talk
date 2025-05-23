@@ -31,6 +31,15 @@ const CreateChatForm = () => {
         </div>
         <p className="ml-7">서울특별시 동작구 신대방제2동</p>
       </div>
+
+      <div className="flex gap-5 w-full">
+        <button className="bg-main rounded-md text-white font-semibold w-1/2 h-12">
+          만들기
+        </button>
+        <button className="bg-main rounded-md text-white font-semibold w-1/2 h-12">
+          취소하기
+        </button>
+      </div>
     </div>
   );
 };
