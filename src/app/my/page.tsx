@@ -44,32 +44,19 @@ const MyPage = () => {
   }, []);
 
   // 즐겨찾기 별 선택
-  const toggleFavorite = async (courtId: number, isFavorite: boolean) => {
-    const method = isFavorite ? "DELETE" : "POST";
-
-    const res = await fetch("/api/my", {
-      method,
+  const toggleFavorite = async (courtId: number) => {
+    const res = await fetch(`/api/my/${courtId}`, {
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ court_id: courtId }),
       credentials: "include",
     });
 
     if (res.ok) {
-      setFavorites((prev) => {
-        if (isFavorite) {
-          // 즐겨찾기 삭제 → 리스트에서 제거
-          return prev.filter((court) => court.court_id !== courtId);
-        } else {
-          // 즐겨찾기 추가 → 상태만 토글 (or 전체 리패치)
-          return prev.map((court) =>
-            court.court_id === courtId
-              ? { ...court, isFavorite: true }
-              : court
-          );
-        }
-      });
+      setFavorites((prev) =>
+        prev.filter((court) => court.court_id !== courtId)
+      );
     } else {
-      console.error("즐겨찾기 토글 실패");
+      console.error("즐겨찾기 삭제 실패");
     }
   };
 
@@ -145,7 +132,7 @@ const MyPage = () => {
               alt="즐겨찾기"
               width={24}
               height={24}
-              onClick={() => toggleFavorite(court.court_id, court.isFavorite)}
+              onClick={() => toggleFavorite(court.court_id)}
               className="cursor-pointer"
             />
           </div>

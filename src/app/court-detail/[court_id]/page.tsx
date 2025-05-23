@@ -39,9 +39,16 @@ export default function CourtDetailPage() {
             });
 
         fetch(`/api/my/${court_id}`)
-            .then((r) => r.json())
+            .then((r) => {
+                if (!r.ok) {
+                    setIsFavorite(false);
+                    setFavoriteMemo("");
+                    return null;
+                }
+                return r.json();
+            })
             .then((data) => {
-                if(data) {
+                if (data) {
                     setIsFavorite(true);
                     setFavoriteMemo(data.favorite_memo);
                 }
@@ -81,35 +88,28 @@ export default function CourtDetailPage() {
                 mode={isFavorite ? "edit" : "add"}
                 onClose={() => setShowModal(false)}
                 onUpdate={async (newMemo) => {
-                    await fetch(`/api/my`, {
+                    await fetch(`/api/my/${master.court_id}`, {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            court_id: master.court_id,
-                            favorite_memo: newMemo,
-                        }),
+                        body: JSON.stringify({ favorite_memo: newMemo }),
                     });
                     setFavoriteMemo(newMemo);
                     setShowModal(false);
                 }}
                 onAdd={async (newMemo) => {
-                    await fetch("/api/my", {
+                    await fetch(`/api/my/${master.court_id}`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            court_id: master.court_id,
-                            favorite_memo: newMemo,
-                        }),
+                        body: JSON.stringify({ favorite_memo: newMemo }),
                     });
                     setFavoriteMemo(newMemo);
                     setIsFavorite(true);
                     setShowModal(false);
                 }}
                 onDelete={async () => {
-                    await fetch("/api/my", {
+                    await fetch(`/api/my/${master.court_id}`, {
                         method: "DELETE",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ court_id: master.court_id }),
                     });
                     setFavoriteMemo("");
                     setIsFavorite(false);
@@ -194,7 +194,6 @@ export default function CourtDetailPage() {
                                 </div>
                             </div>
 
-                            {/* 버튼들 */}
                             {/* 버튼들 */}
                             <div className="flex flex-col items-center space-y-1 w-full">
                                 <button
