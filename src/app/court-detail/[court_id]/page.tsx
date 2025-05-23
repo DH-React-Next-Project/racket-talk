@@ -1,12 +1,14 @@
 "use client";
 
-import {useParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import phoneIcon from "@/assets/courts/phone-black.svg";
 import clockIcon from "@/assets/courts/clock.svg";
 import pointIcon from "@/assets/courts/point.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
+import FavoriteModal from "@/_components/court/FavoriteModal";
 
 type CourtDetail = {
     court_detail_id: number;
@@ -21,9 +23,11 @@ type CourtDetail = {
 };
 
 export default function CourtDetailPage() {
-    const {court_id} = useParams<{ court_id: string }>();
+    const { court_id } = useParams<{ court_id: string }>();
     const [details, setDetails] = useState<CourtDetail[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         if (!court_id) return;
@@ -81,20 +85,21 @@ export default function CourtDetailPage() {
                             {master.court_name}
                         </h2>
                         <div className="ml-2">
-                            <FavoriteToggle/>
+                            <button onClick={() => setShowModal(true)}>
+                                <FavoriteToggle />
+                            </button>
                         </div>
                     </div>
 
-
                     {/* 주소 */}
                     <p className="flex items-center gap-1 text-[8px] text-gray-700">
-                        <Image src={pointIcon} alt="지도" width={8} height={8}/>
+                        <Image src={pointIcon} alt="지도" width={8} height={8} />
                         <span>{master.address ?? "주소 정보 없음"}</span>
                     </p>
 
                     {/* 전화번호 */}
                     <div className="flex items-center gap-1 text-[8px] text-gray-700">
-                        <Image src={phoneIcon} alt="전화" width={8} height={8}/>
+                        <Image src={phoneIcon} alt="전화" width={8} height={8} />
                         <span>{master.telno ?? "전화번호 정보 없음"}</span>
                     </div>
                     {/* 채팅방 리스트 보러가기 */}
@@ -104,10 +109,21 @@ export default function CourtDetailPage() {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div >
+            {showModal && (
+                <FavoriteModal
+                    courtName={master.court_name}
+                    address={master.address ?? ""}
+                    onClose={() => setShowModal(false)}
+                    onCancel={() => setShowModal(false)}
+                    onConfirm={() => {
+                        setShowModal(false);
+                    }}
+                />
+            )}
 
             {/* ─── 상세 코트 목록 ─────────────────────────────── */}
-            <div className="p-6 pb-24 space-y-4 pl-10">
+            < div className="p-6 pb-24 space-y-4 pl-10" >
                 <h3 className="text-[15px] font-bold w-full text-left pl-20">운영중인 코트</h3>
 
                 <div className="grid grid-cols-2 gap-5 max-w-[340px] mx-auto">
@@ -123,7 +139,7 @@ export default function CourtDetailPage() {
 
                             {/* 운영시간 */}
                             <div className="flex items-start gap-1 text-[8px] self-start">
-                                <Image src={clockIcon} alt="운영시간" width={9} height={9}/>
+                                <Image src={clockIcon} alt="운영시간" width={9} height={9} />
                                 <div>
                                     <div className="font-semibold">운영시간</div>
                                     <div>{d.detail_operating_time}</div>
@@ -145,7 +161,7 @@ export default function CourtDetailPage() {
                         </section>
                     ))}
                 </div>
-            </div>
+            </div >
         </>
     );
 }
