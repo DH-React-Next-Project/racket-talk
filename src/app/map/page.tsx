@@ -8,6 +8,7 @@ import marker from "@/assets/courts/map-marker.svg";
 import phoneIcon from "@/assets/courts/phone.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
 
 declare global {
     interface Window {
@@ -168,6 +169,7 @@ function Header({court}: { court: Court }) {
 }
 
 function Body({court}: { court: Court }) {
+    const all:string = "all";
     return (
         <div className="flex gap-4 items-start">
             {court.court_image ? (
@@ -188,7 +190,17 @@ function Body({court}: { court: Court }) {
                         <span className="text-[8px] mt-0.25">{court.telno ?? "정보 없음"}</span>
                     </div>
                 </div>
-                <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">채팅방 리스트 보기</button>
+                <Link href={
+                    {
+                        pathname: `/court-chat-list`,
+                        query: {
+                            courtId: court.court_id,
+                            courtDetailId: all,
+                        },
+                    }
+                }>
+                    <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">채팅방 리스트 보기</button>
+                </Link>
                 <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">채팅방 생성하기</button>
             </div>
         </div>
