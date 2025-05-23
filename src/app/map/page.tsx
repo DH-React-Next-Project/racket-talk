@@ -154,6 +154,8 @@ function Header({ court }: { court: Court }) {
 }
 
 function Body({ court }: { court: Court }) {
+  const router = useRouter();
+  console.log("body 내 코트 정보", court);
   return (
     <div className="flex gap-4 items-start">
       {court.court_image ? (
@@ -179,7 +181,10 @@ function Body({ court }: { court: Court }) {
         <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">
           채팅방 리스트 보기
         </button>
-        <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">
+        <button
+          onClick={() => router.push(`/create-chat?court_id=${court.court_id}`)}
+          className="bg-main text-white rounded-md px-4 py-2 text-[12px]"
+        >
           채팅방 생성하기
         </button>
       </div>
@@ -187,21 +192,6 @@ function Body({ court }: { court: Court }) {
   );
 }
 
-// function Footer({courtId}: { courtId: number | undefined }) {
-//     const router = useRouter();
-//     return (
-//         <div className="mt-4 flex justify-end">
-//             <button
-//                 className="text-gray-400 text-[9px] font-semibold"
-//                 onClick={() => {
-//                     router.push(`/court-detail/${courtId}`);
-//                 }}
-//             >
-//                 상세정보 &gt;
-//             </button>
-//         </div>
-//     );
-// }
 function Footer({ courtId }: { courtId: number | undefined }) {
   const router = useRouter();
 
