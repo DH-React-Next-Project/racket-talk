@@ -141,7 +141,7 @@ export default function ChatPage() {
                 </div>
             </div>
             {loading ? (
-                <p>로딩중</p>
+                <div className="flex-1"><p>로딩중</p></div>
             ) : (
                 <Messages
                     messages={messages}
