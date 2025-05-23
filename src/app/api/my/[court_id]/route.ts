@@ -11,10 +11,9 @@ export async function GET(
     }
 
     const courtId = Number(params.court_id);
-    if (!courtId || Number.isNaN(courtId)) {
+    if (!courtId || isNaN(courtId)) {
         return NextResponse.json(
-            { error: "Court ID is missing or invalid" },
-            { status: 400 }
+            { error: "Court ID is missing or invalid" }, { status: 400 }
         );
     }
 
@@ -39,15 +38,11 @@ export async function POST(
     { params }: { params: { court_id: string } }
 ) {
     const userId = Number(req.cookies.get("user_id")?.value);
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const courtId = Number(params.court_id);
-    if (!courtId || Number.isNaN(courtId)) {
+
+    if (!courtId || isNaN(courtId)) {
         return NextResponse.json(
-            { error: "Court ID is missing or invalid" },
-            { status: 400 }
+            { error: "Court ID is missing or invalid" }, { status: 400 }
         );
     }
 
@@ -77,15 +72,11 @@ export async function PATCH(
     { params }: { params: { court_id: string } }
 ) {
     const userId = Number(req.cookies.get("user_id")?.value);
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const courtId = Number(params.court_id);
-    if (!courtId || Number.isNaN(courtId)) {
+
+    if (!courtId || isNaN(courtId)) {
         return NextResponse.json(
-            { error: "Court ID is missing or invalid" },
-            { status: 400 }
+            { error: "Court ID is missing or invalid" }, { status: 400 }
         );
     }
 
@@ -117,9 +108,12 @@ export async function DELETE(req: NextRequest,
     const userId = Number(req.cookies.get("user_id")?.value);
     const courtId = Number(params.court_id);
 
-    if (!userId || Number.isNaN(courtId)) {
-        return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    if (!courtId || isNaN(courtId)) {
+        return NextResponse.json(
+            { error: "Court ID is missing or invalid" }, { status: 400 }
+        );
     }
+
     try {
         await prisma.favorite.deleteMany({
             where: { user_id: userId, court_id: courtId },

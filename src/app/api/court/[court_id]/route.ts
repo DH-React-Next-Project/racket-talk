@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/utils/prismaClient";
 
-/**
- * GET /api/courts/[court_id]
- *
- * @param req      — Next.js Request 객체 (사용하지 않아도 인자로 받아야 함)
- * @param context  — 동적 세그먼트 파라미터 { params: { court_id: string } }
- *
- * 반환: 코트 1건 (+ 상세 배열 포함) ⇢ JSON
- */
+type Context = {
+    // Next 15: params 는 Promise!
+    params: Promise<{ court_id: string }>;
+};
+
 export async function GET(
     req: Request,
     { params }: { params: { court_id: string } }

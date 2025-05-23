@@ -28,9 +28,17 @@ export default function FavoriteModal({
   const [memo, setMemo] = useState(initialMemo);
 
   return (
-    <div className="fixed inset-0 bg-black/10 z-50 flex justify-center items-center" role="presentation">
-      <div className="bg-white p-6 min-h-[320px] rounded-xl w-[360px] shadow-lg space-y-4" role="dialog" aria-modal="true">
-        {/* 코트 정보 */}
+    <div
+      className="fixed inset-0 bg-black/10 z-50 flex justify-center items-center"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="bg-white p-6 min-h-[290px] rounded-xl w-[360px] shadow-lg space-y-4"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >     {/* 코트 정보 */}
         <div>
           <p className="font-bold text-sm flex items-center gap-1">
             <Image src={pointIcon} alt="위치" width={10} height={10} />
@@ -63,13 +71,13 @@ export default function FavoriteModal({
           {mode === "add" ? (
             <>
               <button
-                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                className="bg-[#F6F6F6] text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
                 onClick={() => onAdd(memo)}
               >
                 추가
               </button>
               <button
-                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                className="bg-[#F6F6F6] text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
                 onClick={onClose}
               >
                 취소
@@ -78,7 +86,7 @@ export default function FavoriteModal({
           ) : editMode ? (
             <>
               <button
-                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                className="bg-[#F6F6F6] text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
                 onClick={() => {
                   onUpdate(memo);
                   setEditMode(false);
@@ -87,7 +95,7 @@ export default function FavoriteModal({
                 저장
               </button>
               <button
-                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                className="bg-[#F6F6F6] text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
                 onClick={() => {
                   setMemo(initialMemo);
                   setEditMode(false);
@@ -99,13 +107,13 @@ export default function FavoriteModal({
           ) : (
             <>
               <button
-                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                className="bg-[#F6F6F6] text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
                 onClick={() => setEditMode(true)}
               >
                 편집
               </button>
               <button
-                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                className="bg-[#F6F6F6] text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
                 onClick={onDelete}
               >
                 삭제

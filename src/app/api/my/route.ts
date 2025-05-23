@@ -1,8 +1,6 @@
-import { cookies } from "next/headers";
 import { prisma } from "@/utils/prismaClient";
 import { NextRequest, NextResponse } from "next/server";
 
-// 유저 정보 + 즐겨찾기한 코트 목록 조회
 export async function GET(req: NextRequest) {
   try {
     const userId = Number(req.cookies.get("user_id")?.value);
@@ -10,6 +8,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // 유저 정보 조회
     const user = await prisma.user.findUnique({
       where: { user_id: userId },
       select: {
@@ -19,21 +18,25 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const favorites = await prisma.favorite.findMany({
+    // 즐겨찾기 court_id + memo
+    const favoritesRaw = await prisma.favorite.findMany({
       where: { user_id: userId },
-      select: { court_id: true },
+      select: {
+        court_id: true,
+      },
     });
 
-    const courtIds = favorites
+    // court 상세 정보
+    const courtIds: number[] = favoritesRaw
       .map((f) => f.court_id)
       .filter((id): id is number => id !== null);
 
     const courts = await prisma.court.findMany({
       where: {
-        court_id: { in: courtIds },
+        court_id: { in: courtIds, },
       },
       select: {
         court_id: true,
@@ -43,15 +46,17 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      user,
-      favorites: courts.map((court) => ({
+    // court
+    const favorites = courts.map((court) => {
+      return {
         ...court,
         isFavorite: true,
-      })),
+      };
     });
+
+    return NextResponse.json({ user, favorites });
   } catch (error) {
     console.error("❌ GET /api/my Error:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
