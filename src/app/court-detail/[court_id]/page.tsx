@@ -38,13 +38,12 @@ export default function CourtDetailPage() {
                 setDetails(Array.isArray(data) ? data : [data]);
             });
 
-        fetch(`/api/my`)
+        fetch(`/api/my/${court_id}`)
             .then((r) => r.json())
             .then((data) => {
-                const match = data.favorites.find((fav: any) => fav.court_id === Number(court_id));
-                if (match) {
+                if(data) {
                     setIsFavorite(true);
-                    setFavoriteMemo(match.favorite_memo || "");
+                    setFavoriteMemo(data.favorite_memo);
                 }
             })
             .finally(() => setLoading(false));
@@ -82,7 +81,7 @@ export default function CourtDetailPage() {
                 mode={isFavorite ? "edit" : "add"}
                 onClose={() => setShowModal(false)}
                 onUpdate={async (newMemo) => {
-                    await fetch("/api/my", {
+                    await fetch(`/api/my`, {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
