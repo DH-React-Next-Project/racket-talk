@@ -94,6 +94,34 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// 즐겨찾기 수정
+export async function PATCH(req: NextRequest) {
+  try {
+    const userIdRaw = cookies().get("user_id")?.value;
+    const user_id = userIdRaw ? Number(userIdRaw) : null;
+
+    const { court_id, favorite_memo } = await req.json();
+
+    if (!user_id || isNaN(user_id) || !court_id) {
+      return NextResponse.json({ message: "Bad Request" }, { status: 400 });
+    }
+
+    const updated = await prisma.favorite.updateMany({
+      where: { user_id, court_id },
+      data: { favorite_memo },
+    });
+
+    if (updated.count === 0) {
+      return NextResponse.json({ message: "Favorite not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Favorite memo updated!" }, { status: 200 });
+  } catch (error) {
+    console.error("❌ PATCH /api/my Error:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
+}
+
 // 즐겨찾기 삭제
 export async function DELETE(req: NextRequest) {
   try {

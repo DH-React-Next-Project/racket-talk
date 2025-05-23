@@ -6,13 +6,26 @@ import penIcon from '@/assets/courts/pen.svg';
 type Props = {
   courtName: string;
   address: string;
+  initialMemo: string;
   onClose: () => void;
-  onConfirm: (memo: string) => void;
-  onCancel: () => void;
+  onUpdate: (memo: string) => void;
+  onDelete: () => void;
+  onAdd: (memo: string) => void;
+  mode: "add" | "edit";
 };
 
-export default function FavoriteModal({ courtName, address, onClose, onConfirm, onCancel }: Props) {
-  const [memo, setMemo] = useState("");
+export default function FavoriteModal({
+  courtName,
+  address,
+  initialMemo,
+  onClose,
+  onUpdate,
+  onDelete,
+  onAdd,
+  mode,
+}: Props) {
+  const [editMode, setEditMode] = useState(mode === "add"); // add 모드는 자동으로 편집 상태
+  const [memo, setMemo] = useState(initialMemo);
 
   return (
     <div className="fixed inset-0 bg-black/10 z-50 flex justify-center items-center" role="presentation">
@@ -28,34 +41,77 @@ export default function FavoriteModal({ courtName, address, onClose, onConfirm, 
           </p>
         </div>
 
-        {/* 메모 영역 */}
-        <div className="rounded-lg p-3 bg-gray-50 h-[140px]">
+        {/* 메모 */}
+        <div className="rounded-lg p-3 bg-white h-[140px] border border-main">
           <p className="text-sm font-semibold mb-1 flex items-center gap-1">
             <Image src={penIcon} alt="메모" width={12} height={12} />
             메모
           </p>
-          <textarea
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            className="w-full h-[80px] text-sm bg-transparent outline-none resize-none"
-            placeholder="메모를 작성해주세요."
-          />
+          {editMode ? (
+            <textarea
+              className="text-sm text-gray-700 w-full h-[90px] resize-none p-1 rounded outline-none border-none"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+            />
+          ) : (
+            <p className="text-sm text-gray-700">{memo || "메모 없음"}</p>
+          )}
         </div>
 
-        {/* 버튼 영역 */}
+        {/* 버튼 */}
         <div className="flex justify-between">
-          <button
-            onClick={() => onConfirm(memo)}
-            className="bg-[#F6F6F6] text-black px-6 py-2 rounded-lg w-[100px] hover:bg-main hover:text-white"
-          >
-            저장
-          </button>
-          <button
-            onClick={onCancel}
-            className="bg-[#F6F6F6] text-black px-6 py-2 rounded-lg w-[100px] hover:bg-main hover:text-white"
-          >
-            취소
-          </button>
+          {mode === "add" ? (
+            <>
+              <button
+                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                onClick={() => onAdd(memo)}
+              >
+                추가
+              </button>
+              <button
+                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                onClick={onClose}
+              >
+                취소
+              </button>
+            </>
+          ) : editMode ? (
+            <>
+              <button
+                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                onClick={() => {
+                  onUpdate(memo);
+                  setEditMode(false);
+                }}
+              >
+                저장
+              </button>
+              <button
+                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                onClick={() => {
+                  setMemo(initialMemo);
+                  setEditMode(false);
+                }}
+              >
+                취소
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                onClick={() => setEditMode(true)}
+              >
+                편집
+              </button>
+              <button
+                className="bg-gray-300 text-black px-4 py-1 rounded-md text-sm w-[48%] hover:bg-main hover:text-white"
+                onClick={onDelete}
+              >
+                삭제
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

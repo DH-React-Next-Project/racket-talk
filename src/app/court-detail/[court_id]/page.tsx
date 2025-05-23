@@ -27,13 +27,26 @@ export default function CourtDetailPage() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [favoriteMemo, setFavoriteMemo] = useState("");
 
     useEffect(() => {
         if (!court_id) return;
 
         fetch(`/api/court-detail/${court_id}`)
             .then((r) => r.json())
-            .then((data) => setDetails(Array.isArray(data) ? data : [data]))
+            .then((data) => {
+                setDetails(Array.isArray(data) ? data : [data]);
+            });
+
+        fetch(`/api/my`)
+            .then((r) => r.json())
+            .then((data) => {
+                const match = data.favorites.find((fav: any) => fav.court_id === Number(court_id));
+                if (match) {
+                    setIsFavorite(true);
+                    setFavoriteMemo(match.favorite_memo || "");
+                }
+            })
             .finally(() => setLoading(false));
     }, [court_id]);
 
@@ -50,7 +63,6 @@ export default function CourtDetailPage() {
     function getDetailSuffix(detailName: string, baseName: string): string {
         if (!detailName) return baseName;
         if (!baseName) return detailName;
-
         // baseName을 정규식 특수문자 없이 안전하게 이스케이프
         const escaped = baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         // 전체(detailName)에서 baseName이 나타나는 모든 부분을 제거
@@ -58,6 +70,54 @@ export default function CourtDetailPage() {
 
         // 잘라낸 뒤 빈 값이면 baseName 그대로
         return suffix || baseName;
+    }
+
+    // 즐겨찾기 CUD
+    function renderFavoriteModal() {
+        return (
+            <FavoriteModal
+                courtName={master.court_name}
+                address={master.address ?? ""}
+                initialMemo={favoriteMemo}
+                mode={isFavorite ? "edit" : "add"}
+                onClose={() => setShowModal(false)}
+                onUpdate={async (newMemo) => {
+                    await fetch("/api/my", {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            court_id: master.court_id,
+                            favorite_memo: newMemo,
+                        }),
+                    });
+                    setFavoriteMemo(newMemo);
+                    setShowModal(false);
+                }}
+                onAdd={async (newMemo) => {
+                    await fetch("/api/my", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            court_id: master.court_id,
+                            favorite_memo: newMemo,
+                        }),
+                    });
+                    setFavoriteMemo(newMemo);
+                    setIsFavorite(true);
+                    setShowModal(false);
+                }}
+                onDelete={async () => {
+                    await fetch("/api/my", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ court_id: master.court_id }),
+                    });
+                    setFavoriteMemo("");
+                    setIsFavorite(false);
+                    setShowModal(false);
+                }}
+            />
+        );
     }
 
     return (
@@ -109,28 +169,8 @@ export default function CourtDetailPage() {
                     </div>
                 </div>
             </div >
-            {showModal && (
-                <FavoriteModal
-                    courtName={master.court_name}
-                    address={master.address ?? ""}
-                    onClose={() => setShowModal(false)}
-                    onCancel={() => setShowModal(false)}
-                    onConfirm={async (memo: string) => {
-                        await fetch("/api/my", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                court_id: master.court_id,
-                                favorite_memo: memo,
-                            }),
-                        });
 
-                        setIsFavorite(true);
-                        setShowModal(false);
-                    }}
-                />
-            )}
-
+            {showModal && renderFavoriteModal()}
             {/* ─── 상세 코트 목록 ─────────────────────────────── */}
             < div className="p-6 pb-24 space-y-4 pl-10" >
                 <h3 className="text-[15px] font-bold w-full text-left pl-20">운영중인 코트</h3>
