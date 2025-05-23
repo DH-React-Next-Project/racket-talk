@@ -96,10 +96,6 @@ export default function ChatPage() {
         }
     };
 
-    const onBackButtonClick = () => {
-        window.history.back();
-    };
-
     const onOutButtonClick = async () => {
         setActiveModal(true);
     };
@@ -127,11 +123,11 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="flex flex-col h-screen pb-24">
+        <div className="flex flex-col h-screen pb-24 pt-20">
             <Header
-                onBackButtonClick={onBackButtonClick}
+                showBackButton={true}
                 onOutButtonClick={onOutButtonClick}
-                showButton={true}
+                showOutButton={true}
             />
             <div className="flex mx-4 mt-2 items-end relative">
                 <div className="w-full absolute -top-15 flex justify-between"></div>

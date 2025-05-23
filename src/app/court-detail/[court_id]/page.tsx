@@ -8,6 +8,7 @@ import clockIcon from "@/assets/courts/clock.svg";
 import pointIcon from "@/assets/courts/point.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
 import Link from "next/link";
+import Header from "@/_components/layouts/Header";
 
 type CourtDetail = {
     court_detail_id: number;
@@ -61,8 +62,9 @@ export default function CourtDetailPage() {
 
     return (
         <>
+            <Header showBackButton={true}/>
             {/* ─── 상단(대표) 정보 ─────────────────────────────── */}
-            <div className="flex flex-row items-start p-3 mt-4 gap-4 justify-center">
+            <div className="flex flex-row items-start p-3 mt-4 gap-4 justify-center pt-22">
                 {/* 이미지 */}
                 {master.court_image ? (
                     <img

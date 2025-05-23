@@ -9,6 +9,7 @@ import phoneIcon from "@/assets/courts/phone.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import Header from "@/_components/layouts/Header";
 
 declare global {
     interface Window {
@@ -131,13 +132,14 @@ const MapPage = () => {
 
     return (
         <>
-            <div id="map" style={{width: "100%", height: "100vh"}}></div>
+            <Header/>
+            <div id="map" className="pt-20" style={{width: "100%", height: "100vh"}}></div>
 
             //테니스장 상세 팝업
             {isModalOpen && selectedCourt && (
                 <Modal onClickToggleModal={() => setIsModalOpen(false)}>
                     <div className="p-6 w-[305px] max-w-md shadow-lg space-y-4">
-                        <Header court={selectedCourt}/>
+                        <MapHeader court={selectedCourt}/>
                         <Body court={selectedCourt}/>
                         <Footer courtId={selectedCourt.court_id}/>
                     </div>
@@ -151,7 +153,7 @@ export default MapPage;
 
 
 // Modal 내부 UI 컴포넌트 복제 (Header, Body, Footer)
-function Header({court}: { court: Court }) {
+function MapHeader({court}: { court: Court }) {
     return (
         <div className="flex items-center gap-2">
             <Image src={marker} alt="marker" width={20} height={20}/>

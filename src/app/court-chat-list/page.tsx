@@ -31,8 +31,8 @@ export default function CourtChatListPage() {
         return <p className="p-6">로딩 중…</p>;
     }
     return (
-        <div className="flex flex-col h-screen pb-24">
-            <Header></Header>
+        <div className="flex flex-col h-screen pb-24 pt-20">
+            <Header showBackButton={true}/>
             {Object.keys(roomList).length > 0 ? (
                 <CourtChatRoom data={roomList} />
             ) : (

@@ -12,7 +12,7 @@ const ChatRoomPage = () => {
             .then(data => setRoomList(data.data));
     }, [])
     return (
-        <div className="flex flex-col h-screen pb-24">
+        <div className="flex flex-col h-screen pb-24 pt-20">
             <Header/>
             <div className="flex-1">
                 <div className="text-charcoal font-bold text-xl m-4">내 채팅 리스트</div>
