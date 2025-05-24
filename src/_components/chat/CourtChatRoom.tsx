@@ -8,6 +8,27 @@ type Props = {
 export default function CourtChartRoom(prop: Props) {
     const courtDetailNames = Object.keys(prop.data);
     console.log(prop.data);
+
+    const handleJoinRoom = async (roomId: number) => {
+        try {
+            const res = await fetch("/api/chat/join", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ roomId }),
+            });
+            if (!res.ok) {
+                console.error("Failed to join chat room");
+                return;
+            }
+            alert("채팅방에 참여했습니다.");
+            location.reload(); // or trigger state update if desired
+        } catch (error) {
+            console.error("Error joining room:", error);
+        }
+    };
+
     return (
         <>
             {courtDetailNames.map((courtDetailName) => {
@@ -39,7 +60,10 @@ export default function CourtChartRoom(prop: Props) {
                                                 {room.memo}
                                             </div>
                                         </div>
-                                        <div
+                                        <button
+                                            onClick={() => {
+                                                if (!room.isJoined) handleJoinRoom(room.roomId);
+                                            }}
                                             className={`flex items-center justify-center text-white rounded-lg px-4 py-2 min-w-1/4 ${
                                                 room.isJoined
                                                     ? "bg-lightGray2"
@@ -49,7 +73,7 @@ export default function CourtChartRoom(prop: Props) {
                                             {room.isJoined
                                                 ? "참여중"
                                                 : "참여하기"}
-                                        </div>
+                                        </button>
                                     </div>
                                 </div>
                             )
