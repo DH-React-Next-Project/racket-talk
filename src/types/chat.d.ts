@@ -15,3 +15,10 @@ type CourtChats = {
     courtName: string;
     rooms: Room[];
 }
+type CourtChatRoom = {
+    roomId: number;
+    roomName: string | null;
+    memo: string | null;
+    courtDetailName: string;
+    isJoined: boolean;
+}

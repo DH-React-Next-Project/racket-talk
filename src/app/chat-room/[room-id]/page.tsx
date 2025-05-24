@@ -20,6 +20,7 @@ export default function ChatPage() {
     const socketRef = useRef<WebSocket | null>(null);
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const [activeModal, setActiveModal] = useState<boolean>(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!roomId) return;
@@ -38,6 +39,7 @@ export default function ChatPage() {
                     );
                     const data = await res.json();
                     setMessages(data.messages);
+                    setLoading(false);
                 } catch (error) {
                     console.error("Error loading history:", error);
                 }
@@ -96,10 +98,6 @@ export default function ChatPage() {
         }
     };
 
-    const onBackButtonClick = () => {
-        window.history.back();
-    };
-
     const onOutButtonClick = async () => {
         setActiveModal(true);
     };
@@ -124,14 +122,14 @@ export default function ChatPage() {
                 console.error("알 수 없는 오류:", err);
             }
         }
-    }
+    };
 
     return (
-        <div className="flex flex-col h-screen pb-24">
+        <div className="flex flex-col h-screen pb-24 pt-20">
             <Header
-                onBackButtonClick={onBackButtonClick}
+                showBackButton={true}
                 onOutButtonClick={onOutButtonClick}
-                showButton={true}
+                showOutButton={true}
             />
             <div className="flex mx-4 mt-2 items-end relative">
                 <div className="w-full absolute -top-15 flex justify-between"></div>
@@ -142,7 +140,14 @@ export default function ChatPage() {
                     {roomName}
                 </div>
             </div>
-            <Messages messages={messages} username={nickName ? nickName : ""} />
+            {loading ? (
+                <div className="flex-1"><p>로딩중</p></div>
+            ) : (
+                <Messages
+                    messages={messages}
+                    username={nickName ? nickName : ""}
+                />
+            )}
             <form onSubmit={sendMessage} className="p-4">
                 <div className="flex">
                     <input
@@ -161,7 +166,7 @@ export default function ChatPage() {
                     </button>
                 </div>
             </form>
-            {activeModal ?
+            {activeModal ? (
                 <OutModal
                     onConfirm={() => {
                         setActiveModal(false);
@@ -169,7 +174,9 @@ export default function ChatPage() {
                     }}
                     onCancel={() => setActiveModal(false)}
                 />
-            : <></>}
+            ) : (
+                <></>
+            )}
         </div>
     );
 }
