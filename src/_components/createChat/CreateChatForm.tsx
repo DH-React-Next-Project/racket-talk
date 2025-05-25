@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
+import { format } from "date-fns";
 
 const CreateChatForm = ({
   data,
@@ -34,6 +35,8 @@ const CreateChatForm = ({
       return;
     }
 
+    const roomName = format(form.time, "yyyy년 M월 d일 a h시", { locale: ko });
+
     try {
       const response = await fetch("/api/chat/join", {
         method: "POST",
@@ -41,6 +44,7 @@ const CreateChatForm = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          room_name: roomName,
           court_detail_id: form.detailCourtId,
           memo: form.memo,
           time: form.time.toISOString(), // ISO 문자열로 전송
@@ -69,7 +73,9 @@ const CreateChatForm = ({
           <Image src={location} width={21} height={26} alt="location" />
           <p className="font-semibold text-lg">{data.court_name}</p>
         </div>
+
         <p className="ml-7">{data.address}</p>
+
         <div className="flex flex-col ml-7 w-fit">
           <label className="font-semibold text-lg mb-3">
             테니스장을 선택하세요.
@@ -133,7 +139,7 @@ const CreateChatForm = ({
           만들기
         </button>
         <button
-          onClick={() => router.push("/map")}
+          onClick={() => router.back()}
           className="bg-main rounded-md text-white font-semibold w-1/2 h-12"
         >
           취소하기
