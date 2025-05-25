@@ -35,7 +35,9 @@ const CreateChatForm = ({
       return;
     }
 
-    const roomName = format(form.time, "yyyy년 M월 d일 a h시", { locale: ko });
+    const roomName = format(form.time, "yyyy년 M월 d일 a h시 m분", {
+      locale: ko,
+    });
 
     try {
       const response = await fetch("/api/chat/join", {
