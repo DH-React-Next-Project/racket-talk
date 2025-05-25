@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-datepicker/dist/react-datepicker.css";
 
 html {
   font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
@@ -11,4 +12,55 @@ body {
   margin: 0 auto;
   width: 100%;
   background-color: white;
+}
+
+.react-datepicker {
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  font-family: "Pretendard", sans-serif;
+}
+
+.react-datepicker__header {
+  background-color: white;
+  border-bottom: none;
+}
+
+.react-datepicker__current-month {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b21a8; /* 보라색 */
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #8b5cf6 !important; /* 보라색 */
+  color: white !important;
+  border-radius: 50% !important;
+}
+
+.react-datepicker__day--today {
+  font-weight: bold;
+  border: 1px solid #8b5cf6;
+  border-radius: 50%;
+}
+
+.react-datepicker__day {
+  margin: 0.3rem;
+}
+
+.react-datepicker__day-name {
+  font-weight: 500;
+  color: #6b7280; /* 중간 회색 */
+}
+
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  .react-datepicker__time-list-item--selected {
+  background-color: #8b5cf6 !important; /* ← 당신의 main 컬러 */
+  color: white !important;
+  font-weight: 600;
+  border-radius: 4px;
 }

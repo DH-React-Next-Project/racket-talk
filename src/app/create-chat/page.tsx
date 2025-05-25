@@ -15,12 +15,19 @@ const CreateChatPage = async ({ searchParams }: Props) => {
   const res = await fetch(
     `${protocol}://${host}/api/court/${searchParams.court_id}`
   );
+
   const data = await res.json();
+
+  const courtDetail = await fetch(
+    `${protocol}://${host}/api/court-detail/${searchParams.court_id}`
+  );
+
+  const courtDetailData = await courtDetail.json();
 
   return (
     <div>
       <Header />
-      <CreateChatForm data={data} />
+      <CreateChatForm data={data} courtDetailData={courtDetailData} />
     </div>
   );
 };

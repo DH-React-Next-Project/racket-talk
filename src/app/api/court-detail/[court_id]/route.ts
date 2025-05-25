@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest, { params }: Context) {
     }
 
     /** 같은 court_id 를 가진 모든 상세 레코드 */
-    const details = await prisma.courtDetail.findMany({
+    const details = await prisma.court_detail.findMany({
         where: { court_id: id },
         include: {
             court: true,        // ← court_name·address·telno·image도 함께 가져옴

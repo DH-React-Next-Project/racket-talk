@@ -18,11 +18,12 @@ model user {
 }
 
 model favorite {
-  favorite_id Int      @id @default(autoincrement())
-  user_id     Int
-  created_at  DateTime @default(now())
-  court_id    Int?
-  user        user     @relation(fields: [user_id], references: [user_id], map: "favorite_userId_fkey")
+  favorite_id   Int      @id @default(autoincrement())
+  user_id       Int
+  created_at    DateTime @default(now())
+  court_id      Int?
+  favorite_memo String?  @db.VarChar(100)
+  user          user     @relation(fields: [user_id], references: [user_id], map: "favorite_userId_fkey")
 }
 
 model chat_message {
@@ -40,6 +41,7 @@ model chat_room {
   memo                  String?                 @db.VarChar(50)
   court_detail_id       String                  @db.VarChar(200)
   chat_room_participant chat_room_participant[]
+  court_detail         court_detail @relation(fields: [court_detail_id], references: [court_detail_id])
 }
 
 model chat_room_participant {
@@ -72,4 +74,5 @@ model court_detail {
   detail_operating_time String? @db.VarChar(50)
   target_user_info      String? @db.VarChar(50)
   court                 court   @relation(fields: [court_id], references: [court_id], onDelete: NoAction, onUpdate: NoAction)
+  chat_room            chat_room[]
 }
