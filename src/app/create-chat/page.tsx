@@ -25,7 +25,7 @@ const CreateChatPage = async ({ searchParams }: Props) => {
   const courtDetailData = await courtDetail.json();
 
   return (
-    <div>
+    <div className="overflow-y-auto pb-32">
       <Header />
       <CreateChatForm data={data} courtDetailData={courtDetailData} />
     </div>

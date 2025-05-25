@@ -9,20 +9,6 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { ko } from "date-fns/locale";
 
-type dataProps = {
-  address: string;
-  court_image: string;
-  court_name: string;
-  lat: string;
-  lng: string;
-  telno: string;
-};
-
-type FormState = {
-  time: Date;
-  memo: string;
-};
-
 const CreateChatForm = ({
   data,
   courtDetailData,
@@ -32,17 +18,78 @@ const CreateChatForm = ({
 }) => {
   const router = useRouter();
   const date = new Date();
-  const [form, setForm] = useState<FormState>({ time: date, memo: "" });
-  console.log("court detail", courtDetailData);
+  const [form, setForm] = useState<FormState>({
+    time: date,
+    memo: "",
+    detailCourtId: courtDetailData?.[0]?.detail_court_id ?? "",
+  });
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setForm({ ...form, detailCourtId: event.target.value });
+  };
+
+  const onSubmit = async () => {
+    if (!form.detailCourtId) {
+      alert("테니스장을 선택해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/chat/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          court_detail_id: form.detailCourtId,
+          memo: form.memo,
+          time: form.time.toISOString(), // ISO 문자열로 전송
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result?.room?.room_id) {
+        // 채팅방 상세 페이지 등으로 이동
+        router.push(`/chat-room/${result.room.room_id}`);
+      } else {
+        alert("채팅방 생성에 실패했습니다.");
+        console.error(result);
+      }
+    } catch (error) {
+      console.error("API 요청 중 오류:", error);
+      alert("문제가 발생했습니다.");
+    }
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center gap-4 mt-5 w-full p-5">
+    <div className="flex flex-col justify-center items-center gap-4 w-full p-5 mt-20">
       <div className="flex flex-col gap-5 border-[2px] border-main rounded-md p-2 w-full">
         <div className="flex gap-2">
           <Image src={location} width={21} height={26} alt="location" />
           <p className="font-semibold text-lg">{data.court_name}</p>
         </div>
         <p className="ml-7">{data.address}</p>
+        <div className="flex flex-col ml-7 w-fit">
+          <label className="font-semibold text-lg mb-3">
+            테니스장을 선택하세요.
+          </label>
+          <select
+            id="court"
+            value={form.detailCourtId}
+            onChange={handleChange}
+            className="border-[2px] border-main px-3 py-2 rounded focus:outline-none focus:ring-0 focus:border-main"
+          >
+            <option value="">상세 테니스장을 선택하세요.</option>
+            {courtDetailData.map((item: any) => (
+              <>
+                <option key={item.detail_court_id} value={item.court_detail_id}>
+                  {item.detail_court_name}
+                </option>
+              </>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="flex flex-col gap-5 border-[2px] border-main rounded-md p-2 w-full">
@@ -79,7 +126,10 @@ const CreateChatForm = ({
       </div>
 
       <div className="flex gap-5 w-full">
-        <button className="bg-main rounded-md text-white font-semibold w-1/2 h-12">
+        <button
+          onClick={onSubmit}
+          className="bg-main rounded-md text-white font-semibold w-1/2 h-12"
+        >
           만들기
         </button>
         <button
