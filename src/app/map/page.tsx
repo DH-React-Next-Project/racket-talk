@@ -193,12 +193,12 @@ function Body({ court }: { court: Court }) {
             },
           }}
         >
-          <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">
+          <button className="bg-main text-white rounded-md px-4 py-2 text-[12px] cursor-pointer">
             채팅방 리스트 보기
           </button>
         </Link>
         <Link href={`/create-chat?court_id=${court.court_id}`}>
-          <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">
+          <button className="bg-main w-full text-white rounded-md px-4 py-2 text-[12px] cursor-pointer">
             채팅방 생성하기
           </button>
         </Link>

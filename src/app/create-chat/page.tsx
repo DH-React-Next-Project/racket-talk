@@ -3,23 +3,24 @@ import Header from "@/_components/layouts/Header";
 import CreateChatForm from "@/_components/createChat/CreateChatForm";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     court_id?: string;
-  };
+  }>;
 }
 
 const CreateChatPage = async ({ searchParams }: Props) => {
-  const host = headers().get("host");
+  const headersList = await headers();
+  const host = headersList.get("host");
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
-  const res = await fetch(
-    `${protocol}://${host}/api/court/${searchParams.court_id}`
-  );
+  const { court_id } = await searchParams;
+
+  const res = await fetch(`${protocol}://${host}/api/court/${court_id}`);
 
   const data = await res.json();
 
   const courtDetail = await fetch(
-    `${protocol}://${host}/api/court-detail/${searchParams.court_id}`
+    `${protocol}://${host}/api/court-detail/${court_id}`
   );
 
   const courtDetailData = await courtDetail.json();

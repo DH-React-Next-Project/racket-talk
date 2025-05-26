@@ -40,7 +40,7 @@ const CreateChatForm = ({
     });
 
     try {
-      const response = await fetch("/api/chat/join", {
+      const response = await fetch("/api/chat/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +57,9 @@ const CreateChatForm = ({
 
       if (response.ok && result?.room?.room_id) {
         // 채팅방 상세 페이지 등으로 이동
-        router.push(`/chat-room/${result.room.room_id}`);
+        router.push(
+          `/chat-room/${result.room.room_id}?courtName=${data.court_name}&roomName=${roomName}`
+        );
       } else {
         alert("채팅방 생성에 실패했습니다.");
         console.error(result);
@@ -136,13 +138,13 @@ const CreateChatForm = ({
       <div className="flex gap-5 w-full">
         <button
           onClick={onSubmit}
-          className="bg-main rounded-md text-white font-semibold w-1/2 h-12"
+          className="bg-main rounded-md text-white font-semibold w-1/2 h-12 cursor-pointer"
         >
           만들기
         </button>
         <button
           onClick={() => router.back()}
-          className="bg-main rounded-md text-white font-semibold w-1/2 h-12"
+          className="bg-main rounded-md text-white font-semibold w-1/2 h-12 cursor-pointer"
         >
           취소하기
         </button>

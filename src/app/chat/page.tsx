@@ -16,7 +16,7 @@ const ChatRoomPage = () => {
       });
   }, []);
   return (
-    <div className="flex flex-col h-screen pb-32 pt-20 overflow-y-auto scrollbar-hide no-scrollbar">
+    <div className="flex w-max-[393px] flex-col h-screen pb-32 pt-20 overflow-y-auto scrollbar-hide no-scrollbar">
       <Header />
       {loading ? (
         <p>로딩중</p>
