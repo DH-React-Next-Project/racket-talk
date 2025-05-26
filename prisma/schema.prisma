@@ -40,8 +40,8 @@ model chat_room {
   room_name             String?                 @db.VarChar(100)
   memo                  String?                 @db.VarChar(50)
   court_detail_id       String                  @db.VarChar(200)
+  court_detail          court_detail            @relation(fields: [court_detail_id], references: [court_detail_id])
   chat_room_participant chat_room_participant[]
-  court_detail         court_detail @relation(fields: [court_detail_id], references: [court_detail_id])
 }
 
 model chat_room_participant {
@@ -68,11 +68,11 @@ model court {
 }
 
 model court_detail {
-  court_detail_id       String  @id @db.VarChar(200)
+  court_detail_id       String      @id @db.VarChar(200)
   court_id              Int
-  detail_court_name     String  @db.VarChar(50)
-  detail_operating_time String? @db.VarChar(50)
-  target_user_info      String? @db.VarChar(50)
-  court                 court   @relation(fields: [court_id], references: [court_id], onDelete: NoAction, onUpdate: NoAction)
-  chat_room            chat_room[]
+  detail_court_name     String      @db.VarChar(50)
+  detail_operating_time String?     @db.VarChar(50)
+  target_user_info      String?     @db.VarChar(50)
+  chat_room             chat_room[]
+  court                 court       @relation(fields: [court_id], references: [court_id], onDelete: NoAction, onUpdate: NoAction)
 }
