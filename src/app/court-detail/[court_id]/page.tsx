@@ -7,6 +7,7 @@ import phoneIcon from "@/assets/courts/phone-black.svg";
 import clockIcon from "@/assets/courts/clock.svg";
 import pointIcon from "@/assets/courts/point.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
+import FavoriteModal from "@/_components/court/FavoriteModal";
 import Link from "next/link";
 import Header from "@/_components/layouts/Header";
 
@@ -26,6 +27,9 @@ export default function CourtDetailPage() {
   const { court_id } = useParams<{ court_id: string }>();
   const [details, setDetails] = useState<CourtDetail[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteMemo, setFavoriteMemo] = useState("");
   const all: string = "all";
 
   useEffect(() => {
@@ -33,7 +37,25 @@ export default function CourtDetailPage() {
 
     fetch(`/api/court-detail/${court_id}`)
       .then((r) => r.json())
-      .then((data) => setDetails(Array.isArray(data) ? data : [data]))
+      .then((data) => {
+        setDetails(Array.isArray(data) ? data : [data]);
+      });
+
+    fetch(`/api/my/${court_id}`)
+      .then((r) => {
+        if (!r.ok) {
+          setIsFavorite(false);
+          setFavoriteMemo("");
+          return null;
+        }
+        return r.json();
+      })
+      .then((data) => {
+        if (data) {
+          setIsFavorite(true);
+          setFavoriteMemo(data.favorite_memo);
+        }
+      })
       .finally(() => setLoading(false));
   }, [court_id]);
 
@@ -52,12 +74,52 @@ export default function CourtDetailPage() {
     if (!baseName) return detailName;
 
     // baseName을 정규식 특수문자 없이 안전하게 이스케이프
-    const escaped = baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     // 전체(detailName)에서 baseName이 나타나는 모든 부분을 제거
-    const suffix = detailName.replace(new RegExp(escaped, "g"), "").trim();
+    const suffix = detailName.replace(new RegExp(escaped, 'g'), '').trim();
 
     // 잘라낸 뒤 빈 값이면 baseName 그대로
     return suffix || baseName;
+  }
+
+  function renderFavoriteModal() {
+    return (
+      <FavoriteModal
+        courtName={master.court_name}
+        address={master.address ?? ""}
+        initialMemo={favoriteMemo}
+        mode={isFavorite ? "edit" : "add"}
+        onClose={() => setShowModal(false)}
+        onUpdate={async (newMemo) => {
+          await fetch(`/api/my/${master.court_id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favorite_memo: newMemo }),
+          });
+          setFavoriteMemo(newMemo);
+          setShowModal(false);
+        }}
+        onAdd={async (newMemo) => {
+          await fetch(`/api/my/${master.court_id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favorite_memo: newMemo }),
+          });
+          setFavoriteMemo(newMemo);
+          setIsFavorite(true);
+          setShowModal(false);
+        }}
+        onDelete={async () => {
+          await fetch(`/api/my/${master.court_id}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          });
+          setFavoriteMemo("");
+          setIsFavorite(false);
+          setShowModal(false);
+        }}
+      />
+    );
   }
 
   return (
@@ -85,9 +147,12 @@ export default function CourtDetailPage() {
               {master.court_name}
             </h2>
             <div className="ml-2">
-              <FavoriteToggle />
+              <button onClick={() => setShowModal(true)}>
+                <FavoriteToggle isFavorite={isFavorite} />
+              </button>
             </div>
           </div>
+
 
           {/* 주소 */}
           <p className="flex items-center gap-1 text-[8px] text-gray-700">
@@ -102,15 +167,15 @@ export default function CourtDetailPage() {
           </div>
           {/* 채팅방 리스트 보러가기 */}
           <div className="relative w-[187px]">
-            <Link
-              href={{
+            <Link href={
+              {
                 pathname: `/court-chat-list`,
                 query: {
                   courtId: master.court_id,
                   courtDetailId: all,
                 },
-              }}
-            >
+              }
+            }>
               <button className="bg-main text-white rounded-md w-full h-[35px] text-[13px]">
                 채팅방 리스트 보러가기
               </button>
@@ -119,11 +184,10 @@ export default function CourtDetailPage() {
         </div>
       </div>
 
+      {showModal && renderFavoriteModal()}
       {/* ─── 상세 코트 목록 ─────────────────────────────── */}
       <div className="p-6 pb-24 space-y-4 pl-10">
-        <h3 className="text-[15px] font-bold w-full text-left pl-20">
-          운영중인 코트
-        </h3>
+        <h3 className="text-[15px] font-bold w-full text-left pl-20">운영중인 코트</h3>
 
         <div className="grid grid-cols-2 gap-5 max-w-[340px] mx-auto">
           {details.map((d) => (
@@ -145,7 +209,6 @@ export default function CourtDetailPage() {
                 </div>
               </div>
 
-              {/* 버튼들 */}
               {/* 버튼들 */}
               <div className="flex flex-col items-center space-y-1 w-full">
                 <Link

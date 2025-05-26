@@ -7,6 +7,7 @@ import Image from "next/image";
 import marker from "@/assets/courts/map-marker.svg";
 import phoneIcon from "@/assets/courts/phone.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
+import FavoriteModal from "@/_components/court/FavoriteModal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/_components/layouts/Header";
@@ -21,6 +22,10 @@ const MapPage = () => {
   const [courtList, setCourtList] = useState<Court[]>([]);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [favoriteCourtIds, setFavoriteCourtIds] = useState<number[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteMemo, setFavoriteMemo] = useState("");
 
   //테니스장정보 가져오기
   useEffect(() => {
@@ -36,6 +41,45 @@ const MapPage = () => {
 
     fetchCourts();
   }, []);
+
+  // 즐겨찾기 정보 가져오기
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch("/api/my");
+        const data = await res.json();
+        const ids = data.favorites.map((f: any) => f.court_id);
+        setFavoriteCourtIds(ids);
+      } catch (error) {
+        console.error(error, "Failed to fetch favorites");
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  // 즐겨찾기 메모 불러오기
+  useEffect(() => {
+    if (!selectedCourt) return;
+
+    const courtId = selectedCourt.court_id;
+
+    fetch(`/api/my/${courtId}`)
+      .then((r) => {
+        if (!r.ok) {
+          setIsFavorite(false);
+          setFavoriteMemo("");
+          return null;
+        }
+        return r.json();
+      })
+      .then((data) => {
+        if (data) {
+          setIsFavorite(true);
+          setFavoriteMemo(data.favorite_memo);
+        }
+      });
+  }, [selectedCourt]);
 
   useEffect(() => {
     const scriptId = "kakao-map-script";
@@ -118,32 +162,106 @@ const MapPage = () => {
     }
   }, [courtList]);
 
+  const handleFavoriteToggleClick = async (court: Court) => {
+    setSelectedCourt(court);
+
+    try {
+      const res = await fetch(`/api/my/${court.court_id}`);
+      if (!res.ok) {
+        setIsFavorite(false);
+        setFavoriteMemo("");
+      } else {
+        const data = await res.json();
+        setIsFavorite(true);
+        setFavoriteMemo(data.favorite_memo);
+      }
+    } catch (err) {
+      console.error(err, "Failed to fetch favorite memo");
+      setIsFavorite(false);
+      setFavoriteMemo("");
+    }
+
+    setShowModal(true);
+  };
+
+  function renderFavoriteModal(courtId: number) {
+    return (
+      <FavoriteModal
+        courtName={selectedCourt?.court_name ?? ""}
+        address={selectedCourt?.address ?? ""}
+        initialMemo={favoriteMemo}
+        mode={isFavorite ? "edit" : "add"}
+        onClose={() => setShowModal(false)}
+        onUpdate={async (newMemo) => {
+          await fetch(`/api/my/${courtId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favorite_memo: newMemo }),
+          });
+          setFavoriteMemo(newMemo);
+          setShowModal(false);
+        }}
+        onAdd={async (newMemo) => {
+          await fetch(`/api/my/${courtId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favorite_memo: newMemo }),
+          });
+          setFavoriteMemo(newMemo);
+          setIsFavorite(true);
+          setFavoriteCourtIds((prev) => [...prev, courtId]);
+          setShowModal(false);
+        }}
+        onDelete={async () => {
+          await fetch(`/api/my/${courtId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          });
+          setFavoriteMemo("");
+          setIsFavorite(false);
+          setFavoriteCourtIds((prev) =>
+            prev.filter((id) => id !== courtId)
+          );
+          setShowModal(false);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <Header />
-      <div
-        id="map"
-        className="pt-20"
-        style={{ width: "100%", height: "100vh" }}
-      ></div>
-      //테니스장 상세 팝업
+      <div id="map" className="pt-20" style={{ width: "100%", height: "100vh" }}></div>
+
+            //테니스장 상세 팝업
       {isModalOpen && selectedCourt && (
         <Modal onClickToggleModal={() => setIsModalOpen(false)}>
           <div className="p-6 w-[305px] max-w-md shadow-lg space-y-4">
-            <MapHeader court={selectedCourt} />
+            <MapHeader
+              court={selectedCourt}
+              isFavorite={favoriteCourtIds.includes(selectedCourt.court_id)}
+              onToggleFavorite={() => handleFavoriteToggleClick(selectedCourt)}
+            />
             <Body court={selectedCourt} />
             <Footer courtId={selectedCourt.court_id} />
           </div>
         </Modal>
       )}
+      {showModal && renderFavoriteModal(selectedCourt.court_id)}
     </>
   );
-};
+}
 
 export default MapPage;
 
 // Modal 내부 UI 컴포넌트 복제 (Header, Body, Footer)
-function MapHeader({ court }: { court: Court }) {
+type MapHeaderProps = {
+  court: Court;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+};
+
+function MapHeader({ court, isFavorite, onToggleFavorite }: MapHeaderProps) {
   return (
     <div className="flex items-center gap-2">
       <Image src={marker} alt="marker" width={20} height={20} />
@@ -151,12 +269,15 @@ function MapHeader({ court }: { court: Court }) {
         <div className="flex items-center gap-1">
           <span className="text-[15px] font-bold">{court.court_name}</span>
           <div style={{ paddingLeft: "10px", paddingBottom: "7px" }}>
-            <FavoriteToggle />
+            <div onClick={onToggleFavorite}>
+              <FavoriteToggle isFavorite={isFavorite} />
+            </div>
           </div>
         </div>
         <span className="text-[8px]">{court.address ?? "주소 없음"}</span>
       </div>
     </div>
+
   );
 }
 
@@ -184,15 +305,15 @@ function Body({ court }: { court: Court }) {
             </span>
           </div>
         </div>
-        <Link
-          href={{
+        <Link href={
+          {
             pathname: `/court-chat-list`,
             query: {
               courtId: court.court_id,
               courtDetailId: all,
             },
-          }}
-        >
+          }
+        }>
           <button className="bg-main text-white rounded-md px-4 py-2 text-[12px] cursor-pointer">
             채팅방 리스트 보기
           </button>

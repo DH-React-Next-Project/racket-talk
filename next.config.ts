@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "yeyak.seoul.go.kr",
+        pathname: "/**",
+      },
+    ],
+  },
+  reactStrictMode: false,
 };
 
 export default nextConfig;
