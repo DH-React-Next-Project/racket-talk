@@ -1,13 +1,15 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/_components/court/Modal";
-import {Court} from "@/types/court";
+import { Court } from "@/types/court";
 import Image from "next/image";
 import marker from "@/assets/courts/map-marker.svg";
 import phoneIcon from "@/assets/courts/phone.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Header from "@/_components/layouts/Header";
 
 declare global {
     interface Window {
@@ -146,18 +148,17 @@ const MapPage = () => {
 
     return (
         <>
-            <div id="map" style={{width: "100%", height: "100vh"}}></div>
+            <Header />
+            <div id="map" className="pt-20" style={{ width: "100%", height: "100vh" }}></div>
 
             //테니스장 상세 팝업
             {isModalOpen && selectedCourt && (
                 <Modal onClickToggleModal={() => setIsModalOpen(false)}>
                     <div className="p-6 w-[305px] max-w-md shadow-lg space-y-4">
-                        <Header
-                            court={selectedCourt}
-                            isFavorite={favoriteCourtIds.includes(selectedCourt.court_id)}
-                        />
-                        <Body court={selectedCourt}/>
-                        <Footer courtId={selectedCourt.court_id}/>
+                        <MapHeader court={selectedCourt}
+                            isFavorite={favoriteCourtIds.includes(selectedCourt.court_id)} />
+                        <Body court={selectedCourt} />
+                        <Footer courtId={selectedCourt.court_id} />
                     </div>
                 </Modal>
             )}
@@ -168,12 +169,12 @@ const MapPage = () => {
 export default MapPage;
 
 // Modal 내부 UI 컴포넌트 복제 (Header, Body, Footer)
-type HeaderProps = {
+type MapHeaderProps = {
     court: Court;
     isFavorite: boolean;
 };
 
-function Header({ court, isFavorite }: HeaderProps) {
+function MapHeader({ court, isFavorite }: MapHeaderProps) {
     return (
         <div className="flex items-center gap-2">
             <Image src={marker} alt="marker" width={20} height={20} />
@@ -190,7 +191,8 @@ function Header({ court, isFavorite }: HeaderProps) {
     );
 }
 
-function Body({court}: { court: Court }) {
+function Body({ court }: { court: Court }) {
+    const all: string = "all";
     return (
         <div className="flex gap-4 items-start">
             {court.court_image ? (
@@ -200,18 +202,28 @@ function Body({court}: { court: Court }) {
                     className="rounded-md object-cover w-[119px] h-[119px]"
                 />
             ) : (
-                <div className="w-[119px] h-[119px] bg-gray-200 rounded-md"/>
+                <div className="w-[119px] h-[119px] bg-gray-200 rounded-md" />
             )}
 
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-1">
-                    <Image src={phoneIcon} alt="phone" width={10} height={11}/>
+                    <Image src={phoneIcon} alt="phone" width={10} height={11} />
                     <div className="flex flex-row gap-2">
                         <b className="text-[10px]">전화번호</b>{" "}
                         <span className="text-[8px] mt-0.25">{court.telno ?? "정보 없음"}</span>
                     </div>
                 </div>
-                <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">채팅방 리스트 보기</button>
+                <Link href={
+                    {
+                        pathname: `/court-chat-list`,
+                        query: {
+                            courtId: court.court_id,
+                            courtDetailId: all,
+                        },
+                    }
+                }>
+                    <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">채팅방 리스트 보기</button>
+                </Link>
                 <button className="bg-main text-white rounded-md px-4 py-2 text-[12px]">채팅방 생성하기</button>
             </div>
         </div>

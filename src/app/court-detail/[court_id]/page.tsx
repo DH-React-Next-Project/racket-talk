@@ -8,6 +8,8 @@ import clockIcon from "@/assets/courts/clock.svg";
 import pointIcon from "@/assets/courts/point.svg";
 import FavoriteToggle from "@/_components/court/ToggleFavorite";
 import FavoriteModal from "@/_components/court/FavoriteModal";
+import Link from "next/link";
+import Header from "@/_components/layouts/Header";
 
 type CourtDetail = {
     court_detail_id: number;
@@ -28,6 +30,7 @@ export default function CourtDetailPage() {
     const [showModal, setShowModal] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [favoriteMemo, setFavoriteMemo] = useState("");
+    const all:string = "all";
 
     useEffect(() => {
         if (!court_id) return;
@@ -121,8 +124,9 @@ export default function CourtDetailPage() {
 
     return (
         <>
+            <Header showBackButton={true}/>
             {/* ─── 상단(대표) 정보 ─────────────────────────────── */}
-            <div className="flex flex-row items-start p-3 mt-4 gap-4 justify-center">
+            <div className="flex flex-row items-start p-3 mt-4 gap-4 justify-center pt-22">
                 {/* 이미지 */}
                 {master.court_image ? (
                     <img
@@ -162,9 +166,19 @@ export default function CourtDetailPage() {
                     </div>
                     {/* 채팅방 리스트 보러가기 */}
                     <div className="relative w-[187px]">
-                        <button className="bg-main text-white rounded-md w-full h-[35px] text-[13px]">
-                            채팅방 리스트 보러가기
-                        </button>
+                        <Link href={
+                            {
+                                pathname: `/court-chat-list`,
+                                query: {
+                                    courtId: master.court_id,
+                                    courtDetailId: all,
+                                },
+                            }
+                        }>
+                            <button className="bg-main text-white rounded-md w-full h-[35px] text-[13px]">
+                                채팅방 리스트 보러가기
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div >
@@ -196,10 +210,17 @@ export default function CourtDetailPage() {
 
                             {/* 버튼들 */}
                             <div className="flex flex-col items-center space-y-1 w-full">
-                                <button
-                                    className="bg-main text-white rounded-md w-[127px] h-[26px] text-[10px] whitespace-nowrap">
-                                    채팅방 리스트 보기
-                                </button>
+                                <Link href={{
+                                        pathname: `/court-chat-list`,
+                                        query: {
+                                            courtId: d.court_id,
+                                            courtDetailId: d.court_detail_id,
+                                        },
+                                    }}>
+                                    <button className="bg-main text-white rounded-md w-[127px] h-[26px] text-[10px] whitespace-nowrap">
+                                        채팅방 리스트 보기
+                                    </button>
+                                </Link>
                                 <button
                                     className="bg-main text-white rounded-md w-[127px] h-[26px] text-[10px] whitespace-nowrap">
                                     채팅방 생성하기
