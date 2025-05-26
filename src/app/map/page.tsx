@@ -66,18 +66,20 @@ const MapPage = () => {
 
     fetch(`/api/my/${courtId}`)
       .then((r) => {
-        if (!r.ok) {
-          setIsFavorite(false);
-          setFavoriteMemo("");
-          return null;
-        }
+        if (!r.ok) return null;
         return r.json();
       })
       .then((data) => {
         if (data) {
           setIsFavorite(true);
-          setFavoriteMemo(data.favorite_memo);
+          setFavoriteMemo(data.favoriteMemo);
+        } else {
+          setIsFavorite(false);
+          setFavoriteMemo("");
         }
+      })
+      .catch((err) => {
+        console.error("즐겨찾기 불러오기 실패:", err);
       });
   }, [selectedCourt]);
 
@@ -167,16 +169,26 @@ const MapPage = () => {
 
     try {
       const res = await fetch(`/api/my/${court.court_id}`);
-      if (!res.ok) {
+
+      // 404는 "즐겨찾기 없음"으로 간주
+      if (res.status === 404) {
         setIsFavorite(false);
         setFavoriteMemo("");
+      } else if (!res.ok) {
+        throw new Error("서버 오류 또는 네트워크 실패");
       } else {
         const data = await res.json();
-        setIsFavorite(true);
-        setFavoriteMemo(data.favorite_memo);
+
+        if (data && data.favorite_memo !== undefined) {
+          setIsFavorite(true);
+          setFavoriteMemo(data.favorite_memo);
+        } else {
+          setIsFavorite(true);
+          setFavoriteMemo(""); // memo 필드가 없을 수도 있으니 대비
+        }
       }
     } catch (err) {
-      console.error(err, "Failed to fetch favorite memo");
+      console.error("❌ Failed to fetch favorite memo", err);
       setIsFavorite(false);
       setFavoriteMemo("");
     }
@@ -185,12 +197,14 @@ const MapPage = () => {
   };
 
   function renderFavoriteModal(courtId: number) {
+    const isEditMode = isFavorite && favoriteMemo.trim() !== "";
+
     return (
       <FavoriteModal
         courtName={selectedCourt?.court_name ?? ""}
         address={selectedCourt?.address ?? ""}
         initialMemo={favoriteMemo}
-        mode={isFavorite ? "edit" : "add"}
+        mode={isEditMode ? "edit" : "add"}
         onClose={() => setShowModal(false)}
         onUpdate={async (newMemo) => {
           await fetch(`/api/my/${courtId}`, {

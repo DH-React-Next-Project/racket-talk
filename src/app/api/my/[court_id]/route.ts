@@ -20,8 +20,8 @@ export async function GET(
     try {
         const data = await prisma.favorite.findFirst({ where: { user_id: userId, court_id: courtId } });
         if (!data) {
-            return NextResponse.json({ error: "Favorite not found" }, { status: 404 });
-        }
+            return NextResponse.json(null); // 즐찾한 적이 없으면 null
+          }
 
         return NextResponse.json(data);
     } catch (err) {
@@ -71,18 +71,20 @@ export async function PATCH(
     req: NextRequest,
     { params }: { params: { court_id: string } }
 ) {
-    const userId = Number(req.cookies.get("user_id")?.value);
-    const courtId = Number(params.court_id);
-
-    if (!courtId || isNaN(courtId)) {
-        return NextResponse.json(
-            { error: "Court ID is missing or invalid" }, { status: 400 }
-        );
-    }
-
-    const { favorite_memo } = await req.json();
-
     try {
+        const userId = Number(req.cookies.get("user_id")?.value);
+        const courtId = Number(params.court_id);
+
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        if (!courtId || isNaN(courtId)) {
+            return NextResponse.json({ error: "Invalid Court ID" }, { status: 400 });
+        }
+
+        const { favorite_memo } = await req.json();
+
         const updated = await prisma.favorite.updateMany({
             where: { user_id: userId, court_id: courtId },
             data: { favorite_memo },
@@ -93,12 +95,9 @@ export async function PATCH(
         }
 
         return NextResponse.json({ message: "Favorite memo updated!" });
-    } catch (err) {
-        console.error("Error updating favorite:", err);
-        return NextResponse.json(
-            { error: "Failed to update favorite" },
-            { status: 500 }
-        );
+    } catch (error) {
+        console.error("PATCH error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
