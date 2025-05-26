@@ -17,7 +17,7 @@ const ChatRoomPage = () => {
     }, [])
     return (
 
-        <div className="flex flex-col h-screen pb-24 pt-20">
+        <div className="flex flex-col min-h-screen pt-20 pb-[88px]">
             <Header/>
             {loading ? <p>로딩중</p> : <div className="flex-1">
                 <div className="text-charcoal font-bold text-xl m-4">내 채팅 리스트</div>
