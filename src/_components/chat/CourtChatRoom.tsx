@@ -22,7 +22,7 @@ export default function CourtChartRoom(prop: Props) {
                 console.error("Failed to join chat room");
                 return;
             }
-            alert("채팅방에 참여했습니다.");
+            //alert("채팅방에 참여했습니다.");
             location.reload(); // or trigger state update if desired
         } catch (error) {
             console.error("Error joining room:", error);
