@@ -11,10 +11,10 @@ import { prisma } from "@/utils/prismaClient";
  */
 export async function GET(
     req: Request,
-    { params }: { params: { court_id: string } }
+    context: { params: { court_id: string } }
 ) {
     try {
-        const courtId = Number(params.court_id);
+        const courtId = Number(context.params.court_id);
 
         // court_id 유효성 확인
         if (!courtId || Number.isNaN(courtId)) {

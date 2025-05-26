@@ -70,7 +70,7 @@ const LoginPage = () => {
         />
         <button
           onClick={onSubmit}
-          className="bg-main bg-opacity-25 rounded-md p-3 text-white"
+          className="bg-main bg-opacity-25 rounded-md p-3 text-white cursor-pointer"
         >
           Login
         </button>
