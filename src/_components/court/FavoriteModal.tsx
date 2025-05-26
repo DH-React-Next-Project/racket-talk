@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import pointIcon from '@/assets/courts/puplePointIcon.svg';
 import penIcon from '@/assets/courts/pen.svg';
@@ -27,9 +27,13 @@ export default function FavoriteModal({
   const [editMode, setEditMode] = useState(mode === "add"); // add 모드는 자동으로 편집 상태
   const [memo, setMemo] = useState(initialMemo);
 
+  useEffect(() => {
+    setMemo(initialMemo);
+  }, [initialMemo]);
+
   return (
     <div
-      className="fixed inset-0 bg-black/10 z-50 flex justify-center items-center"
+      className="fixed inset-0 bg-black/10 z-100 flex justify-center items-center"
       onClick={onClose}
       role="presentation"
     >

@@ -21,7 +21,7 @@ function Modal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[50]"
       onClick={handleBackdropClick}
       role="presentation"
     >
