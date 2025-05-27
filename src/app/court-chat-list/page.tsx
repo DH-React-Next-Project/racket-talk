@@ -36,7 +36,7 @@ export default function CourtChatListPage() {
         );
     }
     return (
-        <div className="flex flex-col h-screen pb-24 pt-20">
+        <div className="flex flex-col h-screen pb-24 pt-20 overflow-y-auto scrollbar-hide no-scrollbar">
             <Header showBackButton={true} />
 
             {Object.keys(roomList).length > 0 ? (
