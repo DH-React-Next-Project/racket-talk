@@ -54,11 +54,12 @@ const CreateChatForm = ({
       });
 
       const result = await response.json();
+      const detailCourtName = courtDetailData.filter((item: any) => item.court_detail_id === form.detailCourtId)[0]?.detail_court_name;
 
-      if (response.ok && result?.room?.room_id) {
+      if (response.ok && result?.room?.room_id && detailCourtName) {
         // 채팅방 상세 페이지 등으로 이동
         router.push(
-          `/chat-room/${result.room.room_id}?courtName=${data.court_name}&roomName=${roomName}`
+          `/chat-room/${result.room.room_id}?courtName=${detailCourtName}&roomName=${roomName}`
         );
       } else {
         alert("채팅방 생성에 실패했습니다.");
