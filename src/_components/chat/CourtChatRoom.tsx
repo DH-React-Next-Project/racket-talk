@@ -7,7 +7,6 @@ type Props = {
 
 export default function CourtChartRoom(prop: Props) {
     const courtDetailNames = Object.keys(prop.data);
-    console.log(prop.data);
 
     const handleJoinRoom = async (roomId: number) => {
         try {

@@ -20,7 +20,6 @@ export default function CourtChatListPage() {
             .then((res) => res.json())
             .then((data) => {
                 if (data.error) {
-                    console.error(data.error);
                     return;
                 }
                 setRoomList(data.groupedByCourtDetail);

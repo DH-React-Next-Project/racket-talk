@@ -92,7 +92,7 @@ const CreateChatForm = ({
           >
             <option value="">상세 테니스장을 선택하세요.</option>
             {courtDetailData.map((item: any) => (
-              <option key={item.detail_court_id} value={item.court_detail_id}>
+              <option key={item.detail_court_name} value={item.court_detail_id}>
                 {item.detail_court_name}
               </option>
             ))}
