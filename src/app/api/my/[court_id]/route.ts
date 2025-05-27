@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/utils/prismaClient";
 
+type Context = {
+    params: Promise<{ court_id: string }>;
+};
+
 export async function GET(
     req: NextRequest,
-    { params }: { params: { court_id: string } }
+    { params }: Context
 ) {
     const userId = Number(req.cookies.get("user_id")?.value);
     if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const courtId = Number(params.court_id);
+    const courtId = Number((await params).court_id);
     if (!courtId || isNaN(courtId)) {
         return NextResponse.json(
             { error: "Court ID is missing or invalid" }, { status: 400 }
@@ -35,10 +39,10 @@ export async function GET(
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { court_id: string } }
+    { params }: Context
 ) {
     const userId = Number(req.cookies.get("user_id")?.value);
-    const courtId = Number(params.court_id);
+    const courtId = Number((await params).court_id);
 
     if (!courtId || isNaN(courtId)) {
         return NextResponse.json(
@@ -69,11 +73,11 @@ export async function POST(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { court_id: string } }
+    { params }: Context
 ) {
     try {
         const userId = Number(req.cookies.get("user_id")?.value);
-        const courtId = Number(params.court_id);
+        const courtId = Number((await params).court_id);
 
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -102,10 +106,10 @@ export async function PATCH(
 }
 
 export async function DELETE(req: NextRequest,
-    { params }: { params: { court_id: string } }
+    { params }: Context
 ) {
     const userId = Number(req.cookies.get("user_id")?.value);
-    const courtId = Number(params.court_id);
+    const courtId = Number((await params).court_id);
 
     if (!courtId || isNaN(courtId)) {
         return NextResponse.json(

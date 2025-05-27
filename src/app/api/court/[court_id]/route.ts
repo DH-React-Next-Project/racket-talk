@@ -8,10 +8,10 @@ type Context = {
 
 export async function GET(
     req: Request,
-    context: { params: { court_id: string } }
+    context: Context
 ) {
     try {
-        const courtId = Number(context.params.court_id);
+        const courtId = Number((await context.params).court_id);
 
         // court_id 유효성 확인
         if (!courtId || Number.isNaN(courtId)) {
