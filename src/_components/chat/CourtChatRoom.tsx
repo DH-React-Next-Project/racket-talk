@@ -8,7 +8,7 @@ type Props = {
 export default function CourtChartRoom(prop: Props) {
     const courtDetailNames = Object.keys(prop.data);
 
-    const handleJoinRoom = async (roomId: number) => {
+    const handleJoinRoom = async (roomId: number, roomName:string, courtDetailName:string) => {
         try {
             const res = await fetch("/api/chat/join", {
                 method: "POST",
@@ -21,8 +21,8 @@ export default function CourtChartRoom(prop: Props) {
                 console.error("Failed to join chat room");
                 return;
             }
-            //alert("채팅방에 참여했습니다.");
-            location.reload(); // or trigger state update if desired
+
+            location.href=`/chat-room/${roomId}?courtName=${courtDetailName}&roomName=${roomName}`;
         } catch (error) {
             console.error("Error joining room:", error);
         }
@@ -61,7 +61,7 @@ export default function CourtChartRoom(prop: Props) {
                                         </div>
                                         <button
                                             onClick={() => {
-                                                if (!room.isJoined) handleJoinRoom(room.roomId);
+                                                if (!room.isJoined) handleJoinRoom(room.roomId, room.roomName as string, room.courtDetailName);
                                             }}
                                             className={`flex items-center justify-center text-white rounded-lg px-4 py-2 min-w-1/4 ${
                                                 room.isJoined
